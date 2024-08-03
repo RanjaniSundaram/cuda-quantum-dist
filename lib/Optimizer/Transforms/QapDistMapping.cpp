@@ -16,6 +16,21 @@
 #include "llvm/Support/ScopedPrinter.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/Transforms/TopologicalSortUtils.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <ctime>
+#include <cstdlib>
+#include <random>
+#include <numeric>
+#include <cmath>
+#include <algorithm>
+#include <cstdlib>
+
 
 #define DEBUG_TYPE "quantum-mapper"
 
@@ -31,7 +46,7 @@ using cudaq::QuantumMeasure;
 //===----------------------------------------------------------------------===//
 
 namespace cudaq::opt {
-#define GEN_PASS_DEF_DISTMAPPINGPASS
+#define GEN_PASS_DEF_QAPDISTMAPPINGPASS
 #include "cudaq/Optimizer/Transforms/Passes.h.inc"
 } // namespace cudaq::opt
 
@@ -41,10 +56,10 @@ namespace {
 // Placement
 //===----------------------------------------------------------------------===//
 
-void identityPlacement(Placement &placement) {
-  for (unsigned i = 0, end = placement.getNumVirtualQ(); i < end; ++i)
-    placement.map(Placement::VirtualQ(i), Placement::DeviceQ(i));
-}
+// void identityPlacement(Placement &placement) {
+//   for (unsigned i = 0, end = placement.getNumVirtualQ(); i < end; ++i)
+//     placement.map(Placement::VirtualQ(i), Placement::DeviceQ(i));
+// }
 
 //===----------------------------------------------------------------------===//
 // Routing
@@ -58,6 +73,291 @@ struct VirtualOp {
 
   VirtualOp(mlir::Operation *op, ArrayRef<Placement::VirtualQ> qubits)
       : op(op), qubits(qubits) {}
+};
+
+class QAPSolver {
+	public:
+		std::vector<std::vector<int>> fMat; //flow matrix, n by n
+		std::vector<std::vector<int>> dMat; // distance matrix, n by n
+		unsigned int n; // the number of facilities/locations
+		QAPSolver(std::vector<std::vector<int>>* flow, std::vector<std::vector<int>>* distance, unsigned int *size) {
+			fMat = *flow;
+			dMat = *distance;
+			n = *size;
+		}
+
+		~QAPSolver() {
+		}
+
+		void genInitSol(const char* method, std::vector<int>* arr, unsigned int iter = 10, const char* mode = "MF2MD") {
+			auto start = std::chrono::steady_clock::now();
+			randomGen(&*arr, iter);
+			auto end = std::chrono::steady_clock::now();
+			auto diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+			runtime_initSol = double(diff.count()) * 0.000001;
+		}
+
+		void LocalSearch2Opt(std::vector<int> current, bool firstAccept = false) {
+			auto start = std::chrono::steady_clock::now();
+			bool breakFlag = false; // to break out from the parent for loop
+			bool done = false;
+			while (!done) {
+				bestSol = current; //make current solution the best
+				for (unsigned int i = 0; i < n; i++) {
+					for (unsigned int j = i + 1; j < n; j++) {
+						//std::cout << "i = " << i << ";" << "j = " << j << std::endl;
+						//prtSolution(); // for troubleshooting
+						transpose2(current, &i, &j); // current is used to not make any transposition permenant
+						if (objectiveFunction(neighborSol) < objectiveFunction(bestSol)) {
+							bestSol = neighborSol;
+							if (firstAccept == true) {
+								breakFlag = true;
+								break;
+							}
+						}
+					}
+					if (breakFlag) {
+						break; // break from parent for loop once first solution is found. Only for First Accept
+					}
+				}
+				if (current == bestSol) {
+					done = true; // end the search if no change in solution
+				}
+				else {
+					current = bestSol;
+				}
+			}
+			auto end = std::chrono::steady_clock::now();
+			auto diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+			runtime = double(diff.count()) * 0.000001;
+		}
+
+		// Tabu Search algorithm. Takes in the initial solution, maximum iteration, min tabu tenure and max tabu tenure
+		void TS(std::vector<int> current, int maxIter = 10, int tmin = 7, int tmax = 10) {
+			auto start = std::chrono::steady_clock::now();
+			std::srand(std::time(nullptr));
+			// generate the sequence of tenure values
+			std::vector<int> tenureArr;
+			generateTenureList(&tenureArr, &tmin, &tmax);
+			unsigned int tenureValInd = 0; // to determine the tenure value assigned to each new tabu-active moves
+			// initialization step
+			bestSol = current;
+			std::vector<std::vector<int>> candidateList; // list of neighborhood solution that is tabu-inactive
+			std::vector<int> moveValue; // objective function value of the moves
+			std::vector<std::vector<unsigned int>> moveList; // stores the 2-opt swap move
+			int iter = 1;
+			std::vector<std::vector<unsigned int>> tabuList; // stores the best move as a tabu-active move
+			std::vector<int> tabuTenureList;
+
+			while (iter <= maxIter) {
+				tenureCheck(&tabuList, &tabuTenureList, &iter); // check if the tenure for all tabu-active moves have expired, remove them if true
+				for (unsigned int i = 0; i < n; i++) {
+					for (unsigned int j = i + 1; j < n; j++) {
+						std::vector<unsigned int> mv{ i, j };
+						// only consider a move if it is not tabu active, else check if aspiration criteria is met
+						if (!tabuCheck(tabuList, mv)) {
+							transpose2(current, &i, &j);
+							candidateList.push_back(neighborSol);
+							moveValue.push_back(objectiveFunction(neighborSol));
+							moveList.push_back(mv);
+						}
+						else {
+							transpose2(current, &i, &j);
+							int neighborVal = objectiveFunction(neighborSol);
+							if (neighborVal < objectiveFunction(bestSol)) {
+								// revoke the tabu status of a move that could give better solution than current best solution
+								tabuRevoke(&tabuList, &tabuTenureList, mv);
+								candidateList.push_back(neighborSol);
+								moveValue.push_back(neighborVal);
+								moveList.push_back(mv);
+							}
+						}
+					}
+				}
+				// Select the best candidate, it is the moves that yield the lowest objective function value
+				std::vector<int>::iterator bestNeighbor = std::min_element(moveValue.begin(), moveValue.end());
+				int bestNeighborPos = int(std::distance(moveValue.begin(), bestNeighbor));
+
+				// Compare the best candidate to the current best solution
+				if (moveValue[bestNeighborPos] < objectiveFunction(bestSol)) {
+					bestSol = candidateList[bestNeighborPos];
+				}
+
+				// best candidate is made as the current solution for the next iteration
+				current = candidateList[bestNeighborPos];
+				// make the move that yield the best candidate a tabu-active
+				tabuAdd(&tabuList, &tabuTenureList, moveList[bestNeighborPos], &tenureArr, &tenureValInd, iter);
+				// clear the current iterations candidate list, move list and move values
+				candidateList.clear();
+				moveValue.clear();
+				moveList.clear();
+				iter++; // increase the iterations
+			}
+			auto end = std::chrono::steady_clock::now();
+			auto diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+			runtime = double(diff.count()) * 0.000001;
+		}
+
+		std::vector<int> getPerm() {
+			return bestSol;
+		}
+
+		std::vector<int> getPermInitSol() {
+			return initSol;
+		}
+
+		int getSolution() {
+			return objectiveFunction(bestSol);
+		}
+
+		int getSolutionInitSol() {
+			return objectiveFunction(initSol);
+		}
+
+		double getRunTime() {
+			return runtime;
+		}
+
+		double getInitSolGenRunTime() {
+			return runtime_initSol;
+		}
+
+	private:
+		double runtime = 0.0;
+		double runtime_initSol = 0.0; // runtime for the initial solution
+		std::vector<int> neighborSol; // the temporary solution from a neighborhood operation
+		std::vector<int> bestSol; // the solution that gives the best value to the optimization problem
+		std::vector<int> initSol; // save the initial solution generated
+
+		// generate the initial solution randomly, set iter to non-zero to search iteratively for a better initial solution
+		// *arr is the pointer to the array the initial solution is write into. iter is set to 10 by default.
+		void randomGen(std::vector<int>* arr, unsigned int iter = 10) {
+			std::srand(std::time(nullptr));
+			if (!initSol.empty()) {
+				initSol.clear();
+			}
+			// create the array from 1 to n
+			for (unsigned int i = 0; i < n; i++) {
+				initSol.push_back(int(i + 1));
+			}
+			std::random_shuffle(initSol.begin(), initSol.end());
+			int score = 2000000000;
+			std::vector<int> temp = initSol;
+			while (iter != 0) {
+				std::random_shuffle(initSol.begin(), initSol.end());
+				int cscore = objectiveFunction(initSol);
+				if (cscore < score) {
+					score = cscore;
+					temp = initSol;
+				}
+				iter--;
+			}
+			*arr = temp;
+			initSol = temp;
+		}
+
+		// calculate the Objective Function value of the QAP
+		int objectiveFunction(std::vector<int> solution) {
+      //llvm::raw_ostream &os = llvm::errs();
+      //os<<"Ranjani checking objective 1"<<"\n";
+			int total = 0;
+			for (unsigned int i = 0; i < n; i++) {
+				for (unsigned int j = 0; j < n; j++) {
+					if (i != j) {
+            //os<<"Ranjani checking obj indices "<<i<<" "<<j<<"\n";
+            //os<<"Ranjani checking obj "<<fMat[i][j]<<" "<<dMat[static_cast<unsigned int>(solution[i]) - 1][static_cast<unsigned int>(solution[j]) - 1]<<"\n";
+						total += fMat[i][j] * dMat[static_cast<unsigned int>(solution[i]) - 1][static_cast<unsigned int>(solution[j]) - 1];
+					} 
+				}
+			}
+			return total;
+		}
+
+		// transposition of 2 elements
+		void transpose2(std::vector<int> solution, unsigned int* i, unsigned int* j) {
+      //llvm::raw_ostream &os = llvm::errs();
+			neighborSol = solution;
+      //os<<"Ranjani checking transposition 1"<<neighborSol[*i]<<"\n";
+			unsigned int temp = neighborSol[*i];
+      //os<<"Ranjani checking transposition 2"<<"\n";
+			neighborSol[*i] = neighborSol[*j];
+      //os<<"Ranjani checking transposition 3"<<"\n";
+			neighborSol[*j] = temp;
+		}
+
+
+		// generate the initial tenure list in ascending order between tmin and tmax (inclusive)
+		void generateTenureList(std::vector<int>* tenure_arr, int* tmin, int* tmax) {
+			for (int i = *tmin; i <= *tmax; i++) {
+				tenure_arr->push_back(i);
+			}
+		}
+
+		// check if the move is tabu-active. true if it is tabu active, false otherwise
+		bool tabuCheck(std::vector<std::vector<unsigned int>> tList, std::vector<unsigned int> move) {
+			for (unsigned int i = 0; i < tList.size(); i++) {
+				if (tList[i] == move) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// revoke a tabu status based on a move
+		void tabuRevoke(std::vector<std::vector<unsigned int>>* tList, std::vector<int>* tenList, std::vector<unsigned int> move) {
+			std::vector<std::vector<unsigned int>> t = *tList;
+			std::vector<int> ten = *tenList;
+			std::vector<unsigned int> moveMirror{ move[1], move[0] };
+			std::vector<unsigned int> pos;
+			for (unsigned int i = 0; i < tList->size(); i++) {
+				if (t[i] == move || t[i] == moveMirror) {
+					pos.push_back(i);
+				}
+				if (pos.size() == 2) {
+					break;
+				}
+			}
+			
+			tList->erase(tList->begin() + pos[0]);
+			tList->erase(tList->begin() + (pos[1] - 1));
+			tenList->erase(tenList->begin() + pos[0]);
+			tenList->erase(tenList->begin() + (pos[1] - 1));
+		}
+
+		// add a new tabu-active move to the tabu list, assigned a different tenure at each iteration using the systematic dynamic tenure principle
+		void tabuAdd(std::vector<std::vector<unsigned int>>* tList, std::vector<int>* tenList, std::vector<unsigned int> move, std::vector<int>* tenure_arr, unsigned int* tenureIndex, int iter) {
+			std::vector<unsigned int> moveMirror{ move[1], move[0] }; // create the symmetrical opposite of the swap move
+			// make a move tabu by appending it and its symmetric opposite to the tabu list
+			tList->push_back(move);
+			tList->push_back(moveMirror);
+			// add the tabu tenure to the new tabu-active move
+			// if the end of the sequence for the range of tabu tenure is reached, reshuffle the sequence randomly and start the index at 0 again.
+			if (*tenureIndex == tenure_arr->size()) {
+				std::random_shuffle(tenure_arr->begin(), tenure_arr->end());
+				*tenureIndex = 0;  // restart the sequence
+			}
+			std::vector<int> ten_arr = *tenure_arr;
+			tenList->push_back(iter + ten_arr[*tenureIndex]);
+			tenList->push_back(iter + ten_arr[*tenureIndex]); // the symmetrical opposite move also share the same tenure
+			*tenureIndex = *tenureIndex + 1;
+		}
+
+		// check the tenure of each tabu-active moves, revoke them if the tenure is expired
+		void tenureCheck(std::vector<std::vector<unsigned int>>* tList, std::vector<int>* tenList, int* iter) {
+			std::vector<int> ten = *tenList;
+			std::vector<unsigned int> pos;
+			for (unsigned int i = 0; i < ten.size(); i++) {
+				if (ten[i] < *iter) {
+					pos.push_back(i); // record all expired tabu-active tenure's index in order
+				}
+			}
+			// revoke tabu status for all tabu-active moves with expired tenure
+			for (unsigned int j = 0; j < pos.size(); j++) {
+				tList->erase(tList->begin() + (pos[j] - j));
+				tenList->erase(tenList->begin() + (pos[j] - j));
+			}
+		}
+
 };
 
 /// The `SabreRouter` class is modified implementation of the following paper:
@@ -90,6 +390,8 @@ struct VirtualOp {
 /// Modifications from the published paper include the ability to defer
 /// measurement mapping until the end, which is required for QIR Base Profile
 /// programs (see the `allowMeasurementMapping` member variable).
+
+
 class SabreRouter {
   using WireMap = DenseMap<Value, Placement::VirtualQ>;
   using Swap = std::pair<Placement::DeviceQ, Placement::DeviceQ>;
@@ -206,6 +508,7 @@ LogicalResult SabreRouter::mapOperation(VirtualOp &virtOp) {
   // qubits virtual qubit that are no adjacently placed.
   if (!virtOp.op->hasTrait<QuantumMeasure>() && deviceQubits.size() == 2 &&
       !device.areConnected(deviceQubits[0], deviceQubits[1])){
+    //device.dump();    
     LLVM_DEBUG(logger.getOStream() << " Map FAILURE\n"<< deviceQubits[0] <<" "<< deviceQubits[1]);
     return failure();}
 
@@ -294,7 +597,7 @@ double SabreRouter::computeLayerCost(ArrayRef<VirtualOp> layer) {
   for (VirtualOp const &virtOp : layer) {
     auto phy0 = placement.getPhy(virtOp.qubits[0]);
     auto phy1 = placement.getPhy(virtOp.qubits[1]);
-    cost += device.getDistance(phy0, phy1) - 1;
+    cost += device.getWeightedDistance(phy0, phy1) - 1;
   }
   return cost / layer.size();
 }
@@ -387,8 +690,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
         ValueRange{}, ValueRange{},
         ValueRange{phyToWire[q0.index], phyToWire[q1.index]},
         DenseBoolArrayAttr{});
-    phyToWire[q0.index] = swap.getResult(0);
-    phyToWire[q1.index] = swap.getResult(1);
+    phyToWire[q0.index] = swap.getResult(1);
+    phyToWire[q1.index] = swap.getResult(0);
   };
 
   std::size_t numSwapSearches = 0;
@@ -438,8 +741,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
 // Pass implementation
 //===----------------------------------------------------------------------===//
 
-struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
-  using DistMappingPassBase::DistMappingPassBase;
+struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
+  using QapDistMappingPassBase::QapDistMappingPassBase;
 
   /// Device dimensions that come from inside the `device` option parenthesis,
   /// like X and Y for star(X,Y)
@@ -639,7 +942,8 @@ struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
     // you update this, be sure to update that as well.
     Device d;
     if (deviceTopoType == Path)
-      d = Device::path(x);
+      //d = Device::path(x);
+      d = Device::path2(x,y);
     else if (deviceTopoType == Ring)
       d = Device::ring(x);
     else if (deviceTopoType == Star)
@@ -671,6 +975,70 @@ struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
     for (auto sink : sinksToRemove)
       sink->erase();
     sinksToRemove.clear();
+    std::vector<std::vector<int>> flow(d.getNumQubits(), std::vector<int>(d.getNumQubits(), 0));
+    std::vector<std::vector<int>> distance=d.DistMatrix();
+    for (Operation &op : block.getOperations()) {
+      if (auto qop = dyn_cast<quake::NullWireOp>(op)) {
+      } else if (quake::isSupportedMappingOperation(&op)) {
+        // Make sure the operation is using value semantics.
+        if (!quake::isLinearValueForm(&op)) {
+          llvm::errs() << "This is not SSA form: " << op << '\n';
+          llvm::errs() << "isa<quake::NullWireOp>() = "
+                       << isa<quake::NullWireOp>(&op) << '\n';
+          llvm::errs() << "isAllReferences() = " << quake::isAllReferences(&op)
+                       << '\n';
+          llvm::errs() << "isWrapped() = " << quake::isWrapped(&op) << '\n';
+          func.emitError("The mapper requires value semantics.");
+          signalPassFailure();
+          return;
+        }
+
+        // Since `quake.sink` operations do not generate new wires, we don't
+        // need to further analyze.
+        if (isa<quake::SinkOp>(op)) {
+          continue;
+        }
+
+        // Get the wire operands and check if the operators uses at most two
+        // qubits. N.B: Measurements do not have this restriction.
+        auto wireOperands = quake::getQuantumOperands(&op);
+        if (!op.hasTrait<QuantumMeasure>() && wireOperands.size() > 2) {
+          func.emitError("Cannot map a kernel with operators that use more "
+                         "than two qubits.");
+          signalPassFailure();
+          return;
+        }
+        int i=0;
+        Value prev;
+        for (auto wireOp : quake::getQuantumOperands(&op)) {
+            //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: zip" <<wireOp<<"\n");
+            if (i==0){
+              prev=wireOp;
+              i++;
+              continue;
+            }
+          flow[wireToVirtualQ[wireOp].index][wireToVirtualQ[prev].index]++;
+          flow[wireToVirtualQ[prev].index][wireToVirtualQ[wireOp].index]++;
+        }
+      }
+    }
+    for (unsigned int i=0;i<d.getNumQubits();i++){
+      for (unsigned int j=0;j<d.getNumQubits();j++){
+        if (i!=j){
+          llvm::dbgs()<<"flow entry "<<i<<" "<<j<<" "<<flow[i][j] <<"\n";
+
+        }
+      }
+    }
+    unsigned int numQubits=d.getNumQubits(); 
+    QAPSolver QAPInstance=QAPSolver(&flow, &distance, &numQubits);
+    std::vector<int> initial;
+    QAPInstance.genInitSol("random", &initial, 100);
+    QAPInstance.TS(initial, 50, 20, 30);
+    llvm::dbgs() << "Ranjani checking: Objective val " <<QAPInstance.getSolution()<<"\n";
+
+
+
 
     // Add implicit measurements if necessary
     if (userQubitsMeasured.empty()) {
@@ -714,10 +1082,19 @@ struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
           Placement::VirtualQ(sources.size());
       sources.push_back(nullWireOp);
     }
-
-    // Place
     Placement placement(sources.size(), d.getNumQubits());
-    identityPlacement(placement);
+    auto solution=QAPInstance.getPerm();
+    for (unsigned int i=0;i<d.getNumQubits();i++){
+      llvm::dbgs()<<"soln entry "<<i<<" "<<solution[i]<<"\n";
+
+    }
+    for (unsigned int i=0; i< placement.getNumVirtualQ();i++){
+      placement.map(Placement::VirtualQ(i),Placement::DeviceQ(solution[i]-1));
+    }
+    // Place
+    //Placement placement(sources.size(), d.getNumQubits());
+    //identityPlacement(placement);
+
     // Route
     SabreRouter router(d, wireToVirtualQ, placement, extendedLayerSize,
                        extendedLayerWeight, decayDelta, roundsDecayReset);
@@ -761,10 +1138,14 @@ struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
     //   for (int v = 0; v < numQubits; v++)
     //     dataForOriginalQubit[v] = dataFromBackendQubit[mapping_v2p[v]];
     llvm::SmallVector<Attribute> attrs(numOrigQubits);
+    Placement placement2(sources.size(), d.getNumQubits());
+    for (unsigned int i=0; i< placement2.getNumVirtualQ();i++){
+      placement2.map(Placement::VirtualQ(i),Placement::DeviceQ(solution[i]-1));
+    }
     for (unsigned int v = 0; v < numOrigQubits; v++)
       attrs[v] =
           IntegerAttr::get(builder.getIntegerType(64),
-                           placement.getPhy(Placement::VirtualQ(v)).index);
+                           placement2.getPhy(Placement::VirtualQ(v)).index);
 
     func->setAttr("mapping_v2p", builder.getArrayAttr(attrs));
 

@@ -418,6 +418,35 @@ def DistMappingPass: Pass<"dist-qubit-mapping", "mlir::func::FuncOp"> {
   ];
 }
 
+def QapDistMappingPass: Pass<"qap-dist-qubit-mapping", "mlir::func::FuncOp"> {
+  let summary = "Perform distributed qubit mapping based on the quadratic assignment problem to account for connectivity constraints";
+  let description = [{
+    Some backends cannot support any-to-any multi-qubit operations, so this pass
+    performs mapping of the qubits by inserting the necessary swap operations
+    into the Quake IR.
+
+    Note 1: this pass requires strictly value semantics for any quantum
+    operations. It will throw an error if any memory reference semantics are
+    present on quantum operations.
+
+    Note 2: this pass can introduce ancilla qubits.
+
+    Note 3: as a result of note 2, if the IR contains no measurements, this pass
+    will inject measurements so that the post-mapping measurements correspond
+    to all of the input (user) qubits.
+  }];
+
+  let options = [
+    Option<"device", "device", "std::string", /*default=*/"\"-\"",
+      "Device topology: path(N), ring(N), star(N), star(N,c), grid(w,h), file(/path/to/file), bypass">,
+    Option<"debug", "debug", "bool", /*default=*/"false", "Enable debug for qubit-mapping pass algorithm">,
+    Option<"extendedLayerSize", "extendedLayerSize", "unsigned", /*default=*/"20", "Extended layer size">,
+    Option<"extendedLayerWeight", "extendedLayerWeight", "float", /*default=*/"0.5", "Extended layer weight">,
+    Option<"decayDelta", "decayDelta", "float", /*default=*/"0.5", "Decay delta">,
+    Option<"roundsDecayReset", "roundsDecayReset", "unsigned", /*default=*/"5", "Number of rounds before decay is reset">
+  ];
+}
+
 
 def AsyncScopePass : Pass<"async-scope", "mlir::func::FuncOp"> {
   let summary = "Partition operations into async scopes based on QPU mapping";

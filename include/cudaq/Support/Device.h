@@ -6,6 +6,25 @@
  * the terms of the Apache License 2.0 which accompanies this distribution.    *
  ******************************************************************************/
 
+// static Device path2(unsigned numQubits,unsigned numNodes) {
+//     assert(numQubits > 0);
+//     Device device;
+//     //device.topology.createNode();
+//     for (unsigned j=0; j< numNodes;j++){
+//       device.topology.createNode();
+//       if (j!=0){
+//         device.topology.addWeightedEdge(Qubit(j*numQubits - 1), Qubit(j*numQubits), 10);
+//       }
+//       for (unsigned i = 1u; i < numQubits; ++i) {
+//         device.topology.createNode();
+//         device.topology.addWeightedEdge(Qubit(j*numQubits+i - 1), Qubit(j*numQubits+i));
+//       }
+//     }
+//     device.computeAllPairShortestPaths();
+//     device.ComputeComponents();
+//     return device;
+//   }
+
 #pragma once
 
 #include "cudaq/ADT/GraphCSR.h"
@@ -23,11 +42,12 @@ public:
   using Qubit = GraphCSR::Node;
   using Path = mlir::SmallVector<Qubit>;
   int numComponents;
+  unsigned int remoteRatio=100;
   /// Read device connectivity info from a file. The input format is the same
   /// as the Graph dump() format.
   static Device file(llvm::StringRef filename) {
     Device device;
-
+    llvm::raw_ostream &os = llvm::errs();
     llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBuffer =
         llvm::MemoryBuffer::getFile(filename);
     if (std::error_code EC = fileBuffer.getError()) {
@@ -58,6 +78,7 @@ public:
             unsigned v2 = 0;
             while (!line.consumeInteger(10, v2)) {
               // Create an edge, but make sure it doesn't already exist
+              os<<"checking edges 1"<<v1<<" "<<v2<<"\n";
               bool edgeAlreadyExists = false;
               for (auto edge : device.topology.getNeighbours(Qubit(v1))) {
                 if (edge == Qubit(v2)) {
@@ -66,8 +87,10 @@ public:
                 }
               }
           
-              if (!edgeAlreadyExists)
+              if (!edgeAlreadyExists){
                 device.topology.addWeightedEdge(Qubit(v1), Qubit(v2));
+                os<<"checking edges "<<v1<<" "<<v2<<"\n";
+              }
               // Prepare for next iteration (removing comma)
               line = line.ltrim(" \t\n\v\f\r,");
             }
@@ -75,7 +98,7 @@ public:
         }
       }
     }
-
+    device.ComputeComponentsinit();
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
     return device;
@@ -92,6 +115,28 @@ public:
     for (unsigned i = 1u; i < numQubits; ++i) {
       device.topology.createNode();
       device.topology.addWeightedEdge(Qubit(i - 1), Qubit(i));
+    }
+    device.computeAllPairShortestPaths();
+    device.ComputeComponents();
+    return device;
+  }
+  static Device path2(unsigned numQubits,unsigned numNodes) {
+    assert(numQubits > 0);
+    unsigned numQperNode=numQubits/numNodes;
+    if (numQperNode*numNodes<numQubits){
+      numQperNode++;
+    }
+    Device device;
+    //device.topology.createNode();
+    for (unsigned j=0; j< numNodes;j++){
+      device.topology.createNode();
+      if (j!=0){
+        device.topology.addWeightedEdge(Qubit(j*numQperNode - 1), Qubit(j*numQperNode), device.remoteRatio);
+      }
+      for (unsigned i = 1u; i < numQperNode; ++i) {
+        device.topology.createNode();
+        device.topology.addWeightedEdge(Qubit(j*numQperNode+i - 1), Qubit(j*numQperNode+i));
+      }
     }
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
@@ -207,6 +252,23 @@ public:
       return Path(llvm::reverse(shortestPaths[pairID]));
     return Path(shortestPaths[pairID]);
   }
+  std::vector<std::vector<int>> DistMatrix(){
+    llvm::raw_ostream &os = llvm::errs();
+    std::vector<std::vector<int>> distMat(topology.getNumNodes(), std::vector<int>(topology.getNumNodes(), 0));
+    os << "Ranjani checking: empty matrix " <<"\n";
+    std::size_t numNodes = topology.getNumNodes();
+    int distance;
+    for (unsigned n = 0; n < numNodes; ++n) {
+      for (unsigned m = n+1; m < numNodes; ++m){
+        distance=getWeightedDistance(Qubit(n),Qubit(m));
+        os << "Ranjani checking: "<<n<<" "<<m<<" "<< getWeightedDistance(Qubit(n),Qubit(m)) <<"\n";
+        distMat[n][m]=distance;
+        distMat[m][n]=distance;
+      }
+    }
+    os << "Ranjani checking: filled matrix " <<"\n";
+    return distMat;
+  }
 
   void dump(llvm::raw_ostream &os = llvm::errs()) const {
     os << "Graph:\n";
@@ -259,7 +321,7 @@ private:
       }
     }
   }*/
-  void ComputeComponents(){
+  void ComputeComponents(llvm::raw_ostream &os = llvm::errs()){
     mlir::SmallVector<unsigned> Visited;
     numComponents=0;
     std::size_t numNodes = topology.getNumNodes();
@@ -268,14 +330,41 @@ private:
       if (!llvm::is_contained(Visited, n)){
         Visited.push_back(n);
         numComponents++;
+        os<<"disconnected node "<<n<<"\n";
         ComponentMap[n]=numComponents;
         for (auto m = n + 1; m < numNodes; ++m) {
-          if (getWeightedDistance(Qubit(n),Qubit(m))<INT_MAX){
+          if (getWeightedDistance(Qubit(n),Qubit(m))<remoteRatio){
             Visited.push_back(m);
             ComponentMap[m]=numComponents;
           }
         }
 
+      }
+    }
+  }
+  void DFSUtil(unsigned v, mlir::SmallVector<bool> &Visited,llvm::raw_ostream &os = llvm::errs()){
+    os<<"visited "<<v<<"\n";
+    Visited[v]=true;
+    auto node=topology.retrieveNode(v);
+    for (auto neighbour : topology.getNeighbours(node)){
+      if (!Visited[neighbour.index]){
+        DFSUtil(neighbour.index, Visited);
+      }
+    }
+  }
+  void ComputeComponentsinit(llvm::raw_ostream &os = llvm::errs()){
+    numComponents=0;
+    std::size_t numNodes = topology.getNumNodes();
+    mlir::SmallVector<bool> Visited(numNodes,false);
+    ComponentMap.resize(numNodes);
+    unsigned int prev=0;
+    DFSUtil(0, Visited);
+    for (unsigned n = 1; n < numNodes; ++n) {
+      if (Visited[n]==false){
+        topology.addWeightedEdge(Qubit(prev), Qubit(n), remoteRatio);
+        prev=n;
+        os<<"disconnected node "<<n<<"\n";
+        DFSUtil(n, Visited);
       }
     }
   }
@@ -286,7 +375,7 @@ private:
     mlir::SmallVector<Qubit> path(numNodes);
     int weights=0;
     for (unsigned n = 0; n < numNodes; ++n) {
-      auto parents = dijkstra(topology, Qubit(n));
+      auto [parents, distance] = dijkstra(topology, Qubit(n), remoteRatio);
       // Reconstruct the paths
       for (auto m = n + 1; m < numNodes; ++m) {
         weights=0;
@@ -301,7 +390,7 @@ private:
             }
           }
           if (check==0){
-            weights+=INT_MAX;
+            weights+=remoteRatio;
           }
           
         }
@@ -312,7 +401,7 @@ private:
         }
         path.push_back(Qubit(n));
         pathsData.append(path.rbegin(), path.rend());
-        shortestPathsWeights[getPairID(n, m)] = weights;
+        shortestPathsWeights[getPairID(n, m)] = distance[m];
         shortestPaths[getPairID(n, m)] =
             PathRef(pathsData.end() - path.size(), pathsData.end());
       }

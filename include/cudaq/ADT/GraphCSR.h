@@ -76,7 +76,7 @@ public:
     auto begin = edges.begin() + nodeOffsets[node.index];
     auto end = node == Node(getNumNodes() - 1)
                    ? edges.end()
-                   : edges.begin() + nodeOffsets[node.index + 1];
+                   : edges.begin() + nodeOffsets[node.index +1];
     return mlir::ArrayRef<Node>(begin, end);
   }
 
@@ -85,7 +85,7 @@ public:
     auto begin = weights.begin() + nodeOffsets[node.index];
     auto end = node == Node(getNumNodes() - 1)
                    ? weights.end()
-                   : weights.begin() + nodeOffsets[node.index + 1];
+                   : weights.begin() + nodeOffsets[node.index +1];
     
     return mlir::ArrayRef<int>(begin, end);
   }

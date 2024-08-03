@@ -1,0 +1,57 @@
+module {
+  func.func @new_function() attributes {mapping_reorder_idx = [4, 0, 5, 1, 3, 2, 7, 6], mapping_v2p = [4, 0, 5, 1, 3, 2, 7, 6]} {
+    %0 = quake.alloca !quake.ref
+    %1 = quake.alloca !quake.ref
+    %2 = quake.alloca !quake.ref
+    %3 = quake.alloca !quake.ref
+    %4 = quake.alloca !quake.ref
+    %5 = quake.alloca !quake.ref
+    %6 = quake.alloca !quake.ref
+    %7 = quake.alloca !quake.ref
+    quake.x [%0] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.h %0 : (!quake.ref) -> ()
+    quake.h %1 : (!quake.ref) -> ()
+    quake.x [%4] %0 : (!quake.ref, !quake.ref) -> ()
+    quake.h %6 : (!quake.ref) -> ()
+    quake.swap %3, %5 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %1 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.swap %1, %4 : (!quake.ref, !quake.ref) -> ()
+    quake.swap %5, %3 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%1] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%4] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.h %1 : (!quake.ref) -> ()
+    quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.swap %4, %1 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%4] %7 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%6] %7 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%2] %4 : (!quake.ref, !quake.ref) -> ()
+    quake.h %6 : (!quake.ref) -> ()
+    %measOut = quake.mz %0 : (!quake.ref) -> !quake.measure
+    %8 = quake.discriminate %measOut : (!quake.measure) -> i1
+    %measOut_0 = quake.mz %1 : (!quake.ref) -> !quake.measure
+    %9 = quake.discriminate %measOut_0 : (!quake.measure) -> i1
+    %measOut_1 = quake.mz %2 : (!quake.ref) -> !quake.measure
+    %10 = quake.discriminate %measOut_1 : (!quake.measure) -> i1
+    %measOut_2 = quake.mz %3 : (!quake.ref) -> !quake.measure
+    %11 = quake.discriminate %measOut_2 : (!quake.measure) -> i1
+    %measOut_3 = quake.mz %4 : (!quake.ref) -> !quake.measure
+    %12 = quake.discriminate %measOut_3 : (!quake.measure) -> i1
+    %measOut_4 = quake.mz %5 : (!quake.ref) -> !quake.measure
+    %13 = quake.discriminate %measOut_4 : (!quake.measure) -> i1
+    %measOut_5 = quake.mz %6 : (!quake.ref) -> !quake.measure
+    %14 = quake.discriminate %measOut_5 : (!quake.measure) -> i1
+    %measOut_6 = quake.mz %7 : (!quake.ref) -> !quake.measure
+    %15 = quake.discriminate %measOut_6 : (!quake.measure) -> i1
+    quake.dealloc %1 : !quake.ref
+    quake.dealloc %3 : !quake.ref
+    quake.dealloc %5 : !quake.ref
+    quake.dealloc %4 : !quake.ref
+    quake.dealloc %0 : !quake.ref
+    quake.dealloc %2 : !quake.ref
+    quake.dealloc %7 : !quake.ref
+    quake.dealloc %6 : !quake.ref
+    return
+  }
+}
+

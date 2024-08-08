@@ -268,8 +268,8 @@ void SabreRouter::reMap(std::vector<int> NewMap, OpBuilder builder){
         ValueRange{}, ValueRange{},
         ValueRange{phyToWire[q0.index], phyToWire[q1.index]},
         DenseBoolArrayAttr{});
-    phyToWire[q0.index] = swap.getResult(1);
-    phyToWire[q1.index] = swap.getResult(0);
+    phyToWire[q0.index] = swap.getResult(0);
+    phyToWire[q1.index] = swap.getResult(1);
     //os<<"[updating current map ("<<placement.getVr(q0).index<<": "<<q1.index<<") "<<placement.getVr(q1).index<<": "<<q0.index<<") "<<"] ";
     currentMap[placement.getVr(q0).index]=q0.index+1;
     currentMap[placement.getVr(q1).index]=q1.index+1;
@@ -509,8 +509,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
         ValueRange{}, ValueRange{},
         ValueRange{phyToWire[q0.index], phyToWire[q1.index]},
         DenseBoolArrayAttr{});
-    phyToWire[q0.index] = swap.getResult(1);
-    phyToWire[q1.index] = swap.getResult(0);
+    phyToWire[q0.index] = swap.getResult(0);
+    phyToWire[q1.index] = swap.getResult(1);
   };
 
   std::size_t numSwapSearches = 0;

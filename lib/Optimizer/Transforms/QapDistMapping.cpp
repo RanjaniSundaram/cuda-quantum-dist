@@ -80,10 +80,10 @@ class QAPSolver {
 		std::vector<std::vector<int>> fMat; //flow matrix, n by n
 		std::vector<std::vector<int>> dMat; // distance matrix, n by n
 		unsigned int n; // the number of facilities/locations
-		QAPSolver(std::vector<std::vector<int>>* flow, std::vector<std::vector<int>>* distance, unsigned int *size) {
-			fMat = *flow;
-			dMat = *distance;
-			n = *size;
+		QAPSolver(std::vector<std::vector<int>> flow, std::vector<std::vector<int>> distance, unsigned int size) {
+			fMat = flow;
+			dMat = distance;
+			n = size;
 		}
 
 		~QAPSolver() {
@@ -97,6 +97,8 @@ class QAPSolver {
 		void TS(std::vector<int> current, int maxIter = 10, int tmin = 7, int tmax = 10) {
 			// generate the sequence of tenure values
 			std::vector<int> tenureArr;
+      //llvm::raw_ostream &os = llvm::errs();
+      
 			generateTenureList(&tenureArr, tmin, tmax);
 			unsigned int tenureValInd = 0; // to determine the tenure value assigned to each new tabu-active moves
 			// initialization step
@@ -109,18 +111,22 @@ class QAPSolver {
 			std::vector<int> tabuTenureList;
 
 			while (iter <= maxIter) {
+        //os<<"new iteration"<<"\n";
 				tenureCheck(&tabuList, &tabuTenureList, &iter); // check if the tenure for all tabu-active moves have expired, remove them if true
 				for (unsigned int i = 0; i < n; i++) {
 					for (unsigned int j = i + 1; j < n; j++) {
+            //os<<"indices "<<i<<" "<<j<<"\n";
 						std::vector<unsigned int> mv{ i, j };
 						// only consider a move if it is not tabu active, else check if aspiration criteria is met
 						if (!tabuCheck(tabuList, mv)) {
+              //os<<"Ranjani checking current "<<current[i]<<" "<<current[j]<<"\n";
 							transpose2(current, i, j);
 							candidateList.push_back(neighborSol);
 							moveValue.push_back(objectiveFunction(neighborSol));
 							moveList.push_back(mv);
 						}
 						else {
+              //os<<"Ranjani checking current tabu"<<current[i]<<" "<<current[j]<<"\n";
 							transpose2(current, i, j);
 							int neighborVal = objectiveFunction(neighborSol);
 							if (neighborVal < objectiveFunction(bestSol)) {
@@ -136,7 +142,10 @@ class QAPSolver {
 				// Select the best candidate, it is the moves that yield the lowest objective function value
 				std::vector<int>::iterator bestNeighbor = std::min_element(moveValue.begin(), moveValue.end());
 				int bestNeighborPos = int(std::distance(moveValue.begin(), bestNeighbor));
-
+        //os<<"best neighbor position "<<bestNeighborPos<<" "<<candidateList.size()<<"\n";
+        if(candidateList.size()==0){
+          break;
+        }
 				// Compare the best candidate to the current best solution
 				if (moveValue[bestNeighborPos] < objectiveFunction(bestSol)) {
 					bestSol = candidateList[bestNeighborPos];
@@ -224,10 +233,9 @@ class QAPSolver {
 		void transpose2(std::vector<int> solution, unsigned int i, unsigned int j) {
       //llvm::raw_ostream &os = llvm::errs();
 			neighborSol = solution;
-      //os<<"Ranjani checking transposition 1"<<neighborSol[i]<<"\n";
+     // os<<"Ranjani checking transposition 1 "<< i<<" "<<neighborSol[i]<<"\n";
 			unsigned int temp = neighborSol[i];
-      //os<<"Ranjani checking transposition 2"<<"\n";
-      //os<<"Ranjani checking transposition 1"<<neighborSol[i]<<"\n";
+      //os<<"Ranjani checking transposition 2 "<<j<<" "<<neighborSol[j]<<"\n";
 			neighborSol[i] = neighborSol[j];
       //os<<"Ranjani checking transposition 3"<<"\n";
 			neighborSol[j] = temp;
@@ -639,8 +647,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
         ValueRange{}, ValueRange{},
         ValueRange{phyToWire[q0.index], phyToWire[q1.index]},
         DenseBoolArrayAttr{});
-    phyToWire[q0.index] = swap.getResult(1);
-    phyToWire[q1.index] = swap.getResult(0);
+    phyToWire[q0.index] = swap.getResult(0);
+    phyToWire[q1.index] = swap.getResult(1);
   };
 
   std::size_t numSwapSearches = 0;
@@ -981,7 +989,7 @@ struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
       }
     }
     unsigned int numQubits=d.getNumQubits(); 
-    QAPSolver QAPInstance=QAPSolver(&flow, &distance, &numQubits);
+    QAPSolver QAPInstance=QAPSolver(flow, distance, numQubits);
     std::vector<int> initial;
     QAPInstance.genInitSol( &initial, 100);
     llvm::dbgs() << "Ranjani checking: Got init random ";

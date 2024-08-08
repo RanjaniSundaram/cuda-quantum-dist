@@ -91,7 +91,9 @@ class QAPSolver {
 				// Select the best candidate, it is the moves that yield the lowest objective function value
 				std::vector<int>::iterator bestNeighbor = std::min_element(moveValue.begin(), moveValue.end());
 				int bestNeighborPos = int(std::distance(moveValue.begin(), bestNeighbor));
-
+				if(candidateList.size()==0){
+					break;
+				}
 				// Compare the best candidate to the current best solution
 				if (moveValue[bestNeighborPos] < objectiveFunction(bestSol)) {
 					bestSol = candidateList[bestNeighborPos];

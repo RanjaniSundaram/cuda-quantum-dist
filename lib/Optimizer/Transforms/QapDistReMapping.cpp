@@ -9,6 +9,8 @@
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Optimizer/Transforms/Passes.h"
 #include "cudaq/Support/Device.h"
+#include "cudaq/Support/CircuitSlicer.h"
+#include "cudaq/ADT/GraphCSR.h"
 #include "cudaq/Support/Placement.h"
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -38,6 +40,7 @@ using namespace mlir;
 
 // Use specific cudaq elements without bringing in the full namespace
 using cudaq::Device;
+using cudaq::GraphCSR;
 using cudaq::Placement;
 using cudaq::QuantumMeasure;
 
@@ -46,7 +49,7 @@ using cudaq::QuantumMeasure;
 //===----------------------------------------------------------------------===//
 
 namespace cudaq::opt {
-#define GEN_PASS_DEF_QAPDISTMAPPINGPASS
+#define GEN_PASS_DEF_QAPDISTREMAPPINGPASS
 #include "cudaq/Optimizer/Transforms/Passes.h.inc"
 } // namespace cudaq::opt
 
@@ -75,238 +78,7 @@ struct VirtualOp {
       : op(op), qubits(qubits) {}
 };
 
-class QAPSolver {
-	public:
-		std::vector<std::vector<int>> fMat; //flow matrix, n by n
-		std::vector<std::vector<int>> dMat; // distance matrix, n by n
-		unsigned int n; // the number of facilities/locations
-		QAPSolver(std::vector<std::vector<int>>* flow, std::vector<std::vector<int>>* distance, unsigned int *size) {
-			fMat = *flow;
-			dMat = *distance;
-			n = *size;
-		}
 
-		~QAPSolver() {
-		}
-
-		void genInitSol( std::vector<int>* arr, unsigned int iter = 10) {
-			randomGen(&*arr, iter);
-		}
-
-		// Tabu Search algorithm. Takes in the initial solution, maximum iteration, min tabu tenure and max tabu tenure
-		void TS(std::vector<int> current, int maxIter = 10, int tmin = 7, int tmax = 10) {
-			// generate the sequence of tenure values
-			std::vector<int> tenureArr;
-			generateTenureList(&tenureArr, tmin, tmax);
-			unsigned int tenureValInd = 0; // to determine the tenure value assigned to each new tabu-active moves
-			// initialization step
-			bestSol = current;
-			std::vector<std::vector<int>> candidateList; // list of neighborhood solution that is tabu-inactive
-			std::vector<int> moveValue; // objective function value of the moves
-			std::vector<std::vector<unsigned int>> moveList; // stores the 2-opt swap move
-			int iter = 1;
-			std::vector<std::vector<unsigned int>> tabuList; // stores the best move as a tabu-active move
-			std::vector<int> tabuTenureList;
-
-			while (iter <= maxIter) {
-				tenureCheck(&tabuList, &tabuTenureList, &iter); // check if the tenure for all tabu-active moves have expired, remove them if true
-				for (unsigned int i = 0; i < n; i++) {
-					for (unsigned int j = i + 1; j < n; j++) {
-						std::vector<unsigned int> mv{ i, j };
-						// only consider a move if it is not tabu active, else check if aspiration criteria is met
-						if (!tabuCheck(tabuList, mv)) {
-							transpose2(current, i, j);
-							candidateList.push_back(neighborSol);
-							moveValue.push_back(objectiveFunction(neighborSol));
-							moveList.push_back(mv);
-						}
-						else {
-							transpose2(current, i, j);
-							int neighborVal = objectiveFunction(neighborSol);
-							if (neighborVal < objectiveFunction(bestSol)) {
-								// revoke the tabu status of a move that could give better solution than current best solution
-								tabuRevoke(&tabuList, &tabuTenureList, mv);
-								candidateList.push_back(neighborSol);
-								moveValue.push_back(neighborVal);
-								moveList.push_back(mv);
-							}
-						}
-					}
-				}
-				// Select the best candidate, it is the moves that yield the lowest objective function value
-				std::vector<int>::iterator bestNeighbor = std::min_element(moveValue.begin(), moveValue.end());
-				int bestNeighborPos = int(std::distance(moveValue.begin(), bestNeighbor));
-
-				// Compare the best candidate to the current best solution
-				if (moveValue[bestNeighborPos] < objectiveFunction(bestSol)) {
-					bestSol = candidateList[bestNeighborPos];
-				}
-
-				// best candidate is made as the current solution for the next iteration
-				current = candidateList[bestNeighborPos];
-				// make the move that yield the best candidate a tabu-active
-				tabuAdd(&tabuList, &tabuTenureList, moveList[bestNeighborPos], &tenureArr, tenureValInd, iter);
-				// clear the current iterations candidate list, move list and move values
-				candidateList.clear();
-				moveValue.clear();
-				moveList.clear();
-				iter++; // increase the iterations
-			}
-		}
-
-		std::vector<int> getPerm() {
-			return bestSol;
-		}
-
-		std::vector<int> getPermInitSol() {
-			return initSol;
-		}
-
-		int getSolution() {
-			return objectiveFunction(bestSol);
-		}
-
-		int getSolutionInitSol() {
-			return objectiveFunction(initSol);
-		}
-
-	private:
-		std::vector<int> neighborSol; // the temporary solution from a neighborhood operation
-		std::vector<int> bestSol; // the solution that gives the best value to the optimization problem
-		std::vector<int> initSol; // save the initial solution generated
-
-		// generate the initial solution randomly, set iter to non-zero to search iteratively for a better initial solution
-		// *arr is the pointer to the array the initial solution is write into. iter is set to 10 by default.
-		void randomGen(std::vector<int>* arr, unsigned int iter = 10) {
-			std::srand(std::time(nullptr));
-			if (!initSol.empty()) {
-				initSol.clear();
-			}
-			// create the array from 1 to n
-			for (unsigned int i = 0; i < n; i++) {
-				initSol.push_back(int(i + 1));
-			}
-			std::random_shuffle(initSol.begin(), initSol.end());
-			int score = INT_MAX;
-			std::vector<int> temp = initSol;
-			while (iter != 0) {
-				std::random_shuffle(initSol.begin(), initSol.end());
-				int cscore = objectiveFunction(initSol);
-				if (cscore < score) {
-					score = cscore;
-					temp = initSol;
-				}
-				iter--;
-			}
-			*arr = temp;
-			initSol = temp;
-		}
-
-		// calculate the Objective Function value of the QAP
-		int objectiveFunction(std::vector<int> solution) {
-      //llvm::raw_ostream &os = llvm::errs();
-      //os<<"Ranjani checking objective 1"<<"\n";
-			int total = 0;
-			for (unsigned int i = 0; i < n; i++) {
-       // os<<"Ranjani checking obj indices "<<solution[i]<<"\n";
-				for (unsigned int j = 0; j < n; j++) {
-					if (i != j) {
-            //os<<"Ranjani checking obj indices "<<i<<" "<<j<<" "<<solution[j]<<"\n";
-            //os<<"Ranjani checking obj "<<fMat[i][j]<<" "<<dMat[static_cast<unsigned int>(solution[i]) - 1][static_cast<unsigned int>(solution[j]) - 1]<<"\n";
-						total += fMat[i][j] * dMat[static_cast<unsigned int>(solution[i]) - 1][static_cast<unsigned int>(solution[j]) - 1];
-					} 
-				}
-			}
-			return total;
-		}
-
-		// transposition of 2 elements
-		void transpose2(std::vector<int> solution, unsigned int i, unsigned int j) {
-      //llvm::raw_ostream &os = llvm::errs();
-			neighborSol = solution;
-      //os<<"Ranjani checking transposition 1"<<neighborSol[i]<<"\n";
-			unsigned int temp = neighborSol[i];
-      //os<<"Ranjani checking transposition 2"<<"\n";
-      //os<<"Ranjani checking transposition 1"<<neighborSol[i]<<"\n";
-			neighborSol[i] = neighborSol[j];
-      //os<<"Ranjani checking transposition 3"<<"\n";
-			neighborSol[j] = temp;
-		}
-
-
-		// generate the initial tenure list in ascending order between tmin and tmax (inclusive)
-		void generateTenureList(std::vector<int>* tenure_arr, int tmin, int tmax) {
-			for (int i = tmin; i <= tmax; i++) {
-				tenure_arr->push_back(i);
-			}
-		}
-
-		// check if the move is tabu-active. true if it is tabu active, false otherwise
-		bool tabuCheck(std::vector<std::vector<unsigned int>> tList, std::vector<unsigned int> move) {
-			for (unsigned int i = 0; i < tList.size(); i++) {
-				if (tList[i] == move) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		// revoke a tabu status based on a move
-		void tabuRevoke(std::vector<std::vector<unsigned int>>* tList, std::vector<int>* tenList, std::vector<unsigned int> move) {
-			std::vector<std::vector<unsigned int>> t = *tList;
-			std::vector<int> ten = *tenList;
-			std::vector<unsigned int> moveMirror{ move[1], move[0] };
-			std::vector<unsigned int> pos;
-			for (unsigned int i = 0; i < tList->size(); i++) {
-				if (t[i] == move || t[i] == moveMirror) {
-					pos.push_back(i);
-				}
-				if (pos.size() == 2) {
-					break;
-				}
-			}
-			
-			tList->erase(tList->begin() + pos[0]);
-			tList->erase(tList->begin() + (pos[1] - 1));
-			tenList->erase(tenList->begin() + pos[0]);
-			tenList->erase(tenList->begin() + (pos[1] - 1));
-		}
-
-		// add a new tabu-active move to the tabu list, assigned a different tenure at each iteration using the systematic dynamic tenure principle
-		void tabuAdd(std::vector<std::vector<unsigned int>>* tList, std::vector<int>* tenList, std::vector<unsigned int> move, std::vector<int>* tenure_arr, unsigned int tenureIndex, int iter) {
-			std::vector<unsigned int> moveMirror{ move[1], move[0] }; // create the symmetrical opposite of the swap move
-			// make a move tabu by appending it and its symmetric opposite to the tabu list
-			tList->push_back(move);
-			tList->push_back(moveMirror);
-			// add the tabu tenure to the new tabu-active move
-			// if the end of the sequence for the range of tabu tenure is reached, reshuffle the sequence randomly and start the index at 0 again.
-			if (tenureIndex == tenure_arr->size()) {
-				std::random_shuffle(tenure_arr->begin(), tenure_arr->end());
-				tenureIndex = 0;  // restart the sequence
-			}
-			std::vector<int> ten_arr = *tenure_arr;
-			tenList->push_back(iter + ten_arr[tenureIndex]);
-			tenList->push_back(iter + ten_arr[tenureIndex]); // the symmetrical opposite move also share the same tenure
-			tenureIndex = tenureIndex + 1;
-		}
-
-		// check the tenure of each tabu-active moves, revoke them if the tenure is expired
-		void tenureCheck(std::vector<std::vector<unsigned int>>* tList, std::vector<int>* tenList, int* iter) {
-			std::vector<int> ten = *tenList;
-			std::vector<unsigned int> pos;
-			for (unsigned int i = 0; i < ten.size(); i++) {
-				if (ten[i] < *iter) {
-					pos.push_back(i); // record all expired tabu-active tenure's index in order
-				}
-			}
-			// revoke tabu status for all tabu-active moves with expired tenure
-			for (unsigned int j = 0; j < pos.size(); j++) {
-				tList->erase(tList->begin() + (pos[j] - j));
-				tenList->erase(tenList->begin() + (pos[j] - j));
-			}
-		}
-
-};
 
 /// The `SabreRouter` class is modified implementation of the following paper:
 /// Li, Gushu, Yufei Ding, and Yuan Xie. "Tackling the qubit mapping problem for
@@ -343,24 +115,26 @@ class QAPSolver {
 class SabreRouter {
   using WireMap = DenseMap<Value, Placement::VirtualQ>;
   using Swap = std::pair<Placement::DeviceQ, Placement::DeviceQ>;
+  
 
 public:
-  SabreRouter(const Device &device, WireMap &wireMap, Placement &placement,
+  using Qubit = GraphCSR::Node;
+  SabreRouter(const Device &device, WireMap &wireMap, Placement &placement, cudaq::CircuitSlicer &reMapper,
               unsigned extendedLayerSize, float extendedLayerWeight,
               float decayDelta, unsigned roundsDecayReset)
-      : device(device), wireToVirtualQ(wireMap), placement(placement),
+      : device(device), wireToVirtualQ(wireMap), placement(placement), reMapper(reMapper),
         extendedLayerSize(extendedLayerSize),
         extendedLayerWeight(extendedLayerWeight), decayDelta(decayDelta),
         roundsDecayReset(roundsDecayReset),
         phyDecay(device.getNumQubits(), 1.0), phyToWire(device.getNumQubits()),
-        allowMeasurementMapping(false) {}
+        allowMeasurementMapping(false),IndexCount(0) {}
 
   /// Main entry point into SabreRouter routing algorithm
   void route(Block &block, ArrayRef<quake::NullWireOp> sources);
-
+  int totalCost=0;
   /// After routing, this contains the final values for all the qubits
   ArrayRef<Value> getPhyToWire() { return phyToWire; }
-  int totalCost=0;
+  void listGates(mlir::SmallVector<std::tuple<int,int>>& gates, ArrayRef<quake::NullWireOp> sources);
 
 private:
   void visitUsers(ResultRange::user_range users,
@@ -369,19 +143,21 @@ private:
 
   LogicalResult mapOperation(VirtualOp &virtOp);
 
-  LogicalResult mapFrontLayer();
+  LogicalResult mapFrontLayer(OpBuilder builder);
 
   void selectExtendedLayer();
 
   double computeLayerCost(ArrayRef<VirtualOp> layer);
+  void reMap(std::vector<int> NewMap, OpBuilder builder);
 
   Swap chooseSwap();
 
 private:
+  
   const Device &device;
   WireMap &wireToVirtualQ;
   Placement &placement;
-
+  cudaq::CircuitSlicer &reMapper;
   // Parameters
   const unsigned extendedLayerSize;
   const float extendedLayerWeight;
@@ -404,6 +180,8 @@ private:
   /// Keep track of whether or not we're in the phase that allows measurements
   /// to be mapped
   bool allowMeasurementMapping;
+  int IndexCount;
+  std::vector<int> currentMap;
 
 #ifndef NDEBUG
   /// A logger used to emit diagnostics during the maping process.
@@ -480,7 +258,84 @@ LogicalResult SabreRouter::mapOperation(VirtualOp &virtOp) {
   return success();
 }
 
-LogicalResult SabreRouter::mapFrontLayer() {
+void SabreRouter::reMap(std::vector<int> NewMap, OpBuilder builder){
+  //llvm::raw_ostream &os = llvm::errs();
+  auto wireType = builder.getType<quake::WireType>();
+  auto addSwap = [&](Placement::DeviceQ q0, Placement::DeviceQ q1) {
+    placement.swap(q0, q1);
+    auto swap = builder.create<quake::SwapOp>(
+        builder.getUnknownLoc(), TypeRange{wireType, wireType}, false,
+        ValueRange{}, ValueRange{},
+        ValueRange{phyToWire[q0.index], phyToWire[q1.index]},
+        DenseBoolArrayAttr{});
+    phyToWire[q0.index] = swap.getResult(1);
+    phyToWire[q1.index] = swap.getResult(0);
+    //os<<"[updating current map ("<<placement.getVr(q0).index<<": "<<q1.index<<") "<<placement.getVr(q1).index<<": "<<q0.index<<") "<<"] ";
+    currentMap[placement.getVr(q0).index]=q0.index+1;
+    currentMap[placement.getVr(q1).index]=q1.index+1;
+  };
+  int numQubits=device.getNumQubits();
+  for (int i=0; i<numQubits;i++){
+    auto path=device.getShortestPath(Qubit(currentMap[i]-1),Qubit(NewMap[i]-1));
+    //os<<"need to get from  "<<currentMap[i]-1<<" to "<<NewMap[i]-1<<" for "<<i<<"\n";
+    //auto path_rev=device.getShortestPath(Qubit(NewMap[i]),Qubit(currentMap[i]));
+    Qubit init=Qubit(currentMap[i]-1);
+    for (auto node: path){
+      if (init==node)
+        continue;
+      //os<<"swapping "<<init.index<<" "<<node.index<<" ";
+      addSwap(init,node);
+      totalCost+=device.getWeightedDistance(init,node);
+      init=node;
+    }
+    //os<<"\n";
+
+  }
+
+}
+
+void SabreRouter::listGates(mlir::SmallVector<std::tuple<int,int>>& gates , ArrayRef<quake::NullWireOp> sources){
+  for (quake::NullWireOp nullWire : sources) {
+    visitUsers(nullWire->getUsers(), frontLayer);
+  }
+  //llvm::raw_ostream &os = llvm::errs();
+  SmallVector<VirtualOp> newFrontLayer;
+  bool done=false;
+  int i=0;
+  int prev;
+  while (!done) {
+    // Once frontLayer is empty, grab everything from measureLayer and go again.
+    if (frontLayer.empty()) {
+      if (allowMeasurementMapping) {
+        done = true;
+      } else {
+        allowMeasurementMapping = true;
+        frontLayer = std::move(measureLayer);
+      }
+      continue;
+    }
+    for (auto virtOp : frontLayer) {
+      i=0;
+      //os<<"virtOp  ";
+      for (auto vr : virtOp.qubits){
+        if (i==0){
+          prev=vr.index;
+          i++;
+          continue;
+        }
+        gates.push_back(std::make_tuple(prev,vr.index));
+        //os << "list gates " <<prev<< " "<<vr.index<<" ";
+      }
+      visitUsers(virtOp.op->getUsers(), newFrontLayer);
+    }
+    //os<<"\n";
+    frontLayer = std::move(newFrontLayer);   
+  }
+  frontLayer.clear();
+
+}
+
+LogicalResult SabreRouter::mapFrontLayer(OpBuilder builder) {
   bool mappedAtLeastOne = false;
   SmallVector<VirtualOp> newFrontLayer;
 
@@ -489,6 +344,21 @@ LogicalResult SabreRouter::mapFrontLayer() {
     logger.indent();
   });
   for (auto virtOp : frontLayer) {
+    if (virtOp.qubits.size()==2){
+      IndexCount++;
+      if (std::find(reMapper.remappingIndices.begin(), reMapper.remappingIndices.end(), IndexCount)!=reMapper.remappingIndices.end()){
+        auto solution=reMapper.reMaps[IndexCount];
+        // for (unsigned int i=0; i< placement.getNumVirtualQ();i++){
+        //   placement.map(Placement::VirtualQ(i),Placement::DeviceQ(solution[i]-1));
+        // }
+        reMap(solution, builder);
+        currentMap=solution;
+        newFrontLayer.push_back(virtOp);
+        for (auto vr : virtOp.qubits)
+          involvedPhy.insert(placement.getPhy(vr));
+        continue;
+      }
+    }
     LLVM_DEBUG({
       logger.startLine() << "* ";
       virtOp.op->print(logger.getOStream(),
@@ -621,7 +491,7 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
     logger.unindent();
     logger.startLine() << logLineComment;
   });
-
+  currentMap=reMapper.reMaps[0];
   // The source ops can always be mapped.
   for (quake::NullWireOp nullWire : sources) {
     visitUsers(nullWire->getUsers(), frontLayer);
@@ -663,8 +533,15 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
       logger.startLine() << logLineComment;
     });
 
-    if (succeeded(mapFrontLayer()))
+    if (succeeded(mapFrontLayer(builder)))
       continue;
+    // if (std::find(reMapper.remappingIndices.begin(), reMapper.remappingIndices.end(), IndexCount)!=reMapper.remappingIndices.end()){
+    //   auto solution=reMapper.reMaps[IndexCount];
+    //   for (unsigned int i=0; i< placement.getNumVirtualQ();i++){
+    //     placement.map(Placement::VirtualQ(i),Placement::DeviceQ(solution[i]-1));
+    //   }
+    //   continue;
+    // }
 
     LLVM_DEBUG(logger.getOStream() << "\n";);
 
@@ -673,8 +550,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
     LLVM_DEBUG(logger.getOStream() << "I'm choosing a swap \n";);
     auto [phy0, phy1] = chooseSwap();
     addSwap(phy0, phy1);
-    totalCost+=device.getWeightedDistance(phy0,phy1);
     involvedPhy.clear();
+    totalCost+=device.getWeightedDistance(phy0,phy1);
 
     // Update decay
     if ((numSwapSearches % roundsDecayReset) == 0) {
@@ -691,8 +568,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
 // Pass implementation
 //===----------------------------------------------------------------------===//
 
-struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
-  using QapDistMappingPassBase::QapDistMappingPassBase;
+struct Mapper : public cudaq::opt::impl::QapDistReMappingPassBase<Mapper> {
+  using QapDistReMappingPassBase::QapDistReMappingPassBase;
 
   /// Device dimensions that come from inside the `device` option parenthesis,
   /// like X and Y for star(X,Y)
@@ -927,6 +804,7 @@ struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
     sinksToRemove.clear();
     std::vector<std::vector<int>> flow(d.getNumQubits(), std::vector<int>(d.getNumQubits(), 0));
     std::vector<std::vector<int>> distance=d.DistMatrix();
+    mlir::SmallVector<std::tuple<int,int>> gates;
     for (Operation &op : block.getOperations()) {
       if (auto qop = dyn_cast<quake::NullWireOp>(op)) {
       } else if (quake::isSupportedMappingOperation(&op)) {
@@ -969,28 +847,37 @@ struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
             }
           flow[wireToVirtualQ[wireOp].index][wireToVirtualQ[prev].index]++;
           flow[wireToVirtualQ[prev].index][wireToVirtualQ[wireOp].index]++;
-        }
-      }
-    }
-    for (unsigned int i=0;i<d.getNumQubits();i++){
-      for (unsigned int j=0;j<d.getNumQubits();j++){
-        if (i!=j){
-          llvm::dbgs()<<"flow entry "<<i<<" "<<j<<" "<<flow[i][j] <<"\n";
-
+          //gates.push_back(std::make_tuple(wireToVirtualQ[prev].index,wireToVirtualQ[wireOp].index));
         }
       }
     }
     unsigned int numQubits=d.getNumQubits(); 
-    QAPSolver QAPInstance=QAPSolver(&flow, &distance, &numQubits);
-    std::vector<int> initial;
-    QAPInstance.genInitSol( &initial, 100);
-    llvm::dbgs() << "Ranjani checking: Got init random ";
-    QAPInstance.TS(initial, 50, 20, 30);
-    llvm::dbgs() << "Ranjani checking: Objective val " <<QAPInstance.getSolution()<<"\n";
-
-
-
-
+    // QAPSolver QAPInstance=QAPSolver(&flow, &distance, &numQubits);
+    // std::vector<int> initial;
+    // QAPInstance.genInitSol( &initial, 100);
+    // llvm::dbgs() << "Ranjani checking: Got init random ";
+    // QAPInstance.TS(initial, 50, 20, 30);
+    // llvm::dbgs() << "Ranjani checking: Objective val " <<QAPInstance.getSolution()<<"\n";
+    Placement placement(sources.size(), d.getNumQubits());
+    for (unsigned int i=0; i< placement.getNumVirtualQ();i++){
+      placement.map(Placement::VirtualQ(i),Placement::DeviceQ(i));
+    }
+    cudaq::CircuitSlicer tempRemapper(numQubits, gates);
+    SabreRouter *temprouter= new SabreRouter(d, wireToVirtualQ, placement, tempRemapper, extendedLayerSize,
+                       extendedLayerWeight, decayDelta, roundsDecayReset);
+    temprouter->listGates(gates,sources);
+    delete temprouter;
+    cudaq::CircuitSlicer Remapper(numQubits, gates);
+    Remapper.DynamicProgram(distance);
+    llvm::dbgs() << "Ranjani checking: Remmaped qubits ";
+    int count=0;
+    for(auto index : Remapper.remappingIndices){
+      llvm::dbgs() << "Ranjani checking: map "<<count<<" index "<<index<<" :";
+      for (auto entry : Remapper.reMaps[index]){
+        llvm::dbgs() << entry-1<<" ";
+      }
+      llvm::dbgs() <<"\n";
+    }
     // Add implicit measurements if necessary
     if (userQubitsMeasured.empty()) {
       OpBuilder builder(&block, block.begin());
@@ -1033,12 +920,7 @@ struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
           Placement::VirtualQ(sources.size());
       sources.push_back(nullWireOp);
     }
-    Placement placement(sources.size(), d.getNumQubits());
-    auto solution=QAPInstance.getPerm();
-    for (unsigned int i=0;i<d.getNumQubits();i++){
-      llvm::dbgs()<<"soln entry "<<i<<" "<<solution[i]<<"\n";
-
-    }
+    auto solution=Remapper.reMaps[0];
     for (unsigned int i=0; i< placement.getNumVirtualQ();i++){
       placement.map(Placement::VirtualQ(i),Placement::DeviceQ(solution[i]-1));
     }
@@ -1047,7 +929,7 @@ struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
     //identityPlacement(placement);
 
     // Route
-    SabreRouter router(d, wireToVirtualQ, placement, extendedLayerSize,
+    SabreRouter router(d, wireToVirtualQ, placement, Remapper, extendedLayerSize,
                        extendedLayerWeight, decayDelta, roundsDecayReset);
     router.route(*blocks.begin(), sources);
     sortTopologically(&block);
@@ -1100,7 +982,6 @@ struct Mapper : public cudaq::opt::impl::QapDistMappingPassBase<Mapper> {
 
     func->setAttr("mapping_v2p", builder.getArrayAttr(attrs));
     llvm::dbgs()<<"Total cost "<<router.totalCost<<"\n";
-
 
     // Now populate mapping_reorder_idx attribute. This attribute will be used
     // by downstream processing to reconstruct a global register as if mapping

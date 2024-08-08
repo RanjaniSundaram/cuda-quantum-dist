@@ -539,8 +539,8 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
       // Create a new block for the async_scope body
       //Block *asyncScopeBlock = builder.createBlock(&asyncScopeOp.getRegion());
       Block *asyncScopeBlock = &asyncScopeOp.getRegion().back();
-      size_t blockCount = asyncScopeOp.getRegion().getBlocks().size();
-      llvm::outs() << "Number of blocks in region: " << blockCount << "\n";
+      //size_t blockCount = asyncScopeOp.getRegion().getBlocks().size();
+      //llvm::outs() << "Number of blocks in region: " << blockCount << "\n";
       builder.setInsertionPointToStart(asyncScopeBlock);
       LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: insertion point"<< '\n');
 

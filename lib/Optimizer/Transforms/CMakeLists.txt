@@ -36,6 +36,7 @@ add_cudaq_library(OptTransforms
   Mapping.cpp
   DistMapping.cpp
   QapDistMapping.cpp
+  QapDistReMapping.cpp
   AsyncScopePass.cpp
   MemToReg.cpp
   MultiControlDecomposition.cpp

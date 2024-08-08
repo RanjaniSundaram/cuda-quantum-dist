@@ -7,11 +7,26 @@ func.func @new_function() {
     %5 = quake.alloca !quake.ref
     %6 = quake.alloca !quake.ref
     %7 = quake.alloca !quake.ref
-    quake.x [%0] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%0] %2 : (!quake.ref, !quake.ref) -> ()
     quake.h %0 : (!quake.ref) -> ()
     quake.h %1 : (!quake.ref) -> ()
-    quake.x [%4] %1 : (!quake.ref, !quake.ref) -> ()
-    quake.x [%3] %2 : (!quake.ref, !quake.ref) -> ()
-    quake.x [%7] %6 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%6] %7 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%1] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%2] %0 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%1] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%4] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.h %1 : (!quake.ref) -> ()
+    quake.x [%4] %3 : (!quake.ref, !quake.ref) -> ()
+    quake.h %6 : (!quake.ref) -> ()
+    quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%2] %6 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%4] %6 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %1 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%2] %4 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%0] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%1] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.h %6 : (!quake.ref) -> ()
     return
   }

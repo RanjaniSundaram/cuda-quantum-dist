@@ -47,7 +47,7 @@ public:
   /// as the Graph dump() format.
   static Device file(llvm::StringRef filename) {
     Device device;
-    llvm::raw_ostream &os = llvm::errs();
+    //llvm::raw_ostream &os = llvm::errs();
     llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBuffer =
         llvm::MemoryBuffer::getFile(filename);
     if (std::error_code EC = fileBuffer.getError()) {
@@ -78,7 +78,7 @@ public:
             unsigned v2 = 0;
             while (!line.consumeInteger(10, v2)) {
               // Create an edge, but make sure it doesn't already exist
-              os<<"checking edges 1"<<v1<<" "<<v2<<"\n";
+              //os<<"checking edges 1"<<v1<<" "<<v2<<"\n";
               bool edgeAlreadyExists = false;
               for (auto edge : device.topology.getNeighbours(Qubit(v1))) {
                 if (edge == Qubit(v2)) {
@@ -89,7 +89,7 @@ public:
           
               if (!edgeAlreadyExists){
                 device.topology.addWeightedEdge(Qubit(v1), Qubit(v2));
-                os<<"checking edges "<<v1<<" "<<v2<<"\n";
+                //os<<"checking edges "<<v1<<" "<<v2<<"\n";
               }
               // Prepare for next iteration (removing comma)
               line = line.ltrim(" \t\n\v\f\r,");
@@ -253,20 +253,20 @@ public:
     return Path(shortestPaths[pairID]);
   }
   std::vector<std::vector<int>> DistMatrix(){
-    llvm::raw_ostream &os = llvm::errs();
+    //llvm::raw_ostream &os = llvm::errs();
     std::vector<std::vector<int>> distMat(topology.getNumNodes(), std::vector<int>(topology.getNumNodes(), 0));
-    os << "Ranjani checking: empty matrix " <<"\n";
+    //os << "Ranjani checking: empty matrix " <<"\n";
     std::size_t numNodes = topology.getNumNodes();
     int distance;
     for (unsigned n = 0; n < numNodes; ++n) {
       for (unsigned m = n+1; m < numNodes; ++m){
         distance=getWeightedDistance(Qubit(n),Qubit(m));
-        os << "Ranjani checking: "<<n<<" "<<m<<" "<< getWeightedDistance(Qubit(n),Qubit(m)) <<"\n";
+        //os << "Ranjani checking: "<<n<<" "<<m<<" "<< getWeightedDistance(Qubit(n),Qubit(m)) <<"\n";
         distMat[n][m]=distance;
         distMat[m][n]=distance;
       }
     }
-    os << "Ranjani checking: filled matrix " <<"\n";
+    //os << "Ranjani checking: filled matrix " <<"\n";
     return distMat;
   }
 
@@ -330,7 +330,7 @@ private:
       if (!llvm::is_contained(Visited, n)){
         Visited.push_back(n);
         numComponents++;
-        os<<"disconnected node "<<n<<"\n";
+        //os<<"disconnected node "<<n<<"\n";
         ComponentMap[n]=numComponents;
         for (auto m = n + 1; m < numNodes; ++m) {
           if (getWeightedDistance(Qubit(n),Qubit(m))<remoteRatio){
@@ -343,7 +343,7 @@ private:
     }
   }
   void DFSUtil(unsigned v, mlir::SmallVector<bool> &Visited,llvm::raw_ostream &os = llvm::errs()){
-    os<<"visited "<<v<<"\n";
+    //os<<"visited "<<v<<"\n";
     Visited[v]=true;
     auto node=topology.retrieveNode(v);
     for (auto neighbour : topology.getNeighbours(node)){
@@ -363,7 +363,7 @@ private:
       if (Visited[n]==false){
         topology.addWeightedEdge(Qubit(prev), Qubit(n), remoteRatio);
         prev=n;
-        os<<"disconnected node "<<n<<"\n";
+        //os<<"disconnected node "<<n<<"\n";
         DFSUtil(n, Visited);
       }
     }

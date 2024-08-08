@@ -1,0 +1,34 @@
+module {
+  func.func @new_function() {
+    %0 = quake.null_wire
+    %1 = quake.null_wire
+    %2 = quake.null_wire
+    %3 = quake.null_wire
+    %4 = quake.null_wire
+    %5 = quake.null_wire
+    %6 = quake.null_wire
+    %7 = quake.null_wire
+    %8:2 = quake.x [%0] %2 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %9 = quake.h %8#0 : (!quake.wire) -> !quake.wire
+    %10 = quake.h %1 : (!quake.wire) -> !quake.wire
+    %11:2 = quake.x [%3] %10 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %12:2 = quake.x [%6] %7 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %13:2 = quake.x [%11#1] %8#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %14:2 = quake.x [%13#1] %9 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %15:2 = quake.x [%11#0] %5 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %16:2 = quake.x [%13#0] %14#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %17:2 = quake.x [%4] %15#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %18 = quake.h %16#0 : (!quake.wire) -> !quake.wire
+    %19 = quake.h %12#0 : (!quake.wire) -> !quake.wire
+    %20:2 = quake.x [%15#0] %17#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %21:2 = quake.x [%17#0] %19 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %22:2 = quake.x [%20#0] %18 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %23:2 = quake.x [%22#0] %20#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %24:2 = quake.x [%16#1] %21#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %25:2 = quake.x [%14#1] %24#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %26:2 = quake.x [%22#1] %23#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %27 = quake.h %21#1 : (!quake.wire) -> !quake.wire
+    return
+  }
+}
+

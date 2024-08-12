@@ -13,11 +13,13 @@
 //     for (unsigned j=0; j< numNodes;j++){
 //       device.topology.createNode();
 //       if (j!=0){
-//         device.topology.addWeightedEdge(Qubit(j*numQubits - 1), Qubit(j*numQubits), 10);
+//         device.topology.addWeightedEdge(Qubit(j*numQubits - 1),
+//         Qubit(j*numQubits), 10);
 //       }
 //       for (unsigned i = 1u; i < numQubits; ++i) {
 //         device.topology.createNode();
-//         device.topology.addWeightedEdge(Qubit(j*numQubits+i - 1), Qubit(j*numQubits+i));
+//         device.topology.addWeightedEdge(Qubit(j*numQubits+i - 1),
+//         Qubit(j*numQubits+i));
 //       }
 //     }
 //     device.computeAllPairShortestPaths();
@@ -42,12 +44,12 @@ public:
   using Qubit = GraphCSR::Node;
   using Path = mlir::SmallVector<Qubit>;
   int numComponents;
-  unsigned int remoteRatio=100;
+  unsigned int remoteRatio = 100;
   /// Read device connectivity info from a file. The input format is the same
   /// as the Graph dump() format.
   static Device file(llvm::StringRef filename) {
     Device device;
-    //llvm::raw_ostream &os = llvm::errs();
+    // llvm::raw_ostream &os = llvm::errs();
     llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBuffer =
         llvm::MemoryBuffer::getFile(filename);
     if (std::error_code EC = fileBuffer.getError()) {
@@ -78,7 +80,7 @@ public:
             unsigned v2 = 0;
             while (!line.consumeInteger(10, v2)) {
               // Create an edge, but make sure it doesn't already exist
-              //os<<"checking edges 1"<<v1<<" "<<v2<<"\n";
+              // os<<"checking edges 1"<<v1<<" "<<v2<<"\n";
               bool edgeAlreadyExists = false;
               for (auto edge : device.topology.getNeighbours(Qubit(v1))) {
                 if (edge == Qubit(v2)) {
@@ -86,10 +88,10 @@ public:
                   break;
                 }
               }
-          
-              if (!edgeAlreadyExists){
+
+              if (!edgeAlreadyExists) {
                 device.topology.addWeightedEdge(Qubit(v1), Qubit(v2));
-                //os<<"checking edges "<<v1<<" "<<v2<<"\n";
+                // os<<"checking edges "<<v1<<" "<<v2<<"\n";
               }
               // Prepare for next iteration (removing comma)
               line = line.ltrim(" \t\n\v\f\r,");
@@ -120,22 +122,25 @@ public:
     device.ComputeComponents();
     return device;
   }
-  static Device path2(unsigned numQubits,unsigned numNodes) {
+  static Device path2(unsigned numQubits, unsigned numNodes) {
     assert(numQubits > 0);
-    unsigned numQperNode=numQubits/numNodes;
-    if (numQperNode*numNodes<numQubits){
+    unsigned numQperNode = numQubits / numNodes;
+    if (numQperNode * numNodes < numQubits) {
       numQperNode++;
     }
     Device device;
-    //device.topology.createNode();
-    for (unsigned j=0; j< numNodes;j++){
+    // device.topology.createNode();
+    for (unsigned j = 0; j < numNodes; j++) {
       device.topology.createNode();
-      if (j!=0){
-        device.topology.addWeightedEdge(Qubit(j*numQperNode - 1), Qubit(j*numQperNode), device.remoteRatio);
+      if (j != 0) {
+        device.topology.addWeightedEdge(Qubit(j * numQperNode - 1),
+                                        Qubit(j * numQperNode),
+                                        device.remoteRatio);
       }
       for (unsigned i = 1u; i < numQperNode; ++i) {
         device.topology.createNode();
-        device.topology.addWeightedEdge(Qubit(j*numQperNode+i - 1), Qubit(j*numQperNode+i));
+        device.topology.addWeightedEdge(Qubit(j * numQperNode + i - 1),
+                                        Qubit(j * numQperNode + i));
       }
     }
     device.computeAllPairShortestPaths();
@@ -234,17 +239,13 @@ public:
   mlir::ArrayRef<Qubit> getNeighbours(Qubit src) const {
     return topology.getNeighbours(src);
   }
-  
-  int getNumComponents(){
-    return numComponents;
-  }
+
+  int getNumComponents() { return numComponents; }
 
   bool areConnected(Qubit q0, Qubit q1) const {
     return getDistance(q0, q1) == 1;
   }
-  int getComponent(unsigned q){
-    return ComponentMap[q];
-  }
+  int getComponent(unsigned q) { return ComponentMap[q]; }
   /// Returns a shortest path between two qubits.
   Path getShortestPath(Qubit src, Qubit dst) const {
     unsigned pairID = getPairID(src.index, dst.index);
@@ -252,21 +253,23 @@ public:
       return Path(llvm::reverse(shortestPaths[pairID]));
     return Path(shortestPaths[pairID]);
   }
-  std::vector<std::vector<int>> DistMatrix(){
-    //llvm::raw_ostream &os = llvm::errs();
-    std::vector<std::vector<int>> distMat(topology.getNumNodes(), std::vector<int>(topology.getNumNodes(), 0));
-    //os << "Ranjani checking: empty matrix " <<"\n";
+  std::vector<std::vector<int>> DistMatrix() {
+    // llvm::raw_ostream &os = llvm::errs();
+    std::vector<std::vector<int>> distMat(
+        topology.getNumNodes(), std::vector<int>(topology.getNumNodes(), 0));
+    // os << "Ranjani checking: empty matrix " <<"\n";
     std::size_t numNodes = topology.getNumNodes();
     int distance;
     for (unsigned n = 0; n < numNodes; ++n) {
-      for (unsigned m = n+1; m < numNodes; ++m){
-        distance=getWeightedDistance(Qubit(n),Qubit(m));
-        //os << "Ranjani checking: "<<n<<" "<<m<<" "<< getWeightedDistance(Qubit(n),Qubit(m)) <<"\n";
-        distMat[n][m]=distance;
-        distMat[m][n]=distance;
+      for (unsigned m = n + 1; m < numNodes; ++m) {
+        distance = getWeightedDistance(Qubit(n), Qubit(m));
+        // os << "Ranjani checking: "<<n<<" "<<m<<" "<<
+        // getWeightedDistance(Qubit(n),Qubit(m)) <<"\n";
+        distMat[n][m] = distance;
+        distMat[m][n] = distance;
       }
     }
-    //os << "Ranjani checking: filled matrix " <<"\n";
+    // os << "Ranjani checking: filled matrix " <<"\n";
     return distMat;
   }
 
@@ -278,7 +281,8 @@ public:
     for (unsigned src = 0; src < getNumQubits(); ++src)
       for (unsigned dst = 0; dst < getNumQubits(); ++dst) {
         auto path = getShortestPath(Qubit(src), Qubit(dst));
-        os << '(' << src << ", " << dst <<", "<<getWeightedDistance(Qubit(src),Qubit(dst))<< ") : {";
+        os << '(' << src << ", " << dst << ", "
+           << getWeightedDistance(Qubit(src), Qubit(dst)) << ") : {";
         llvm::interleaveComma(path, os);
         os << "}\n";
       }
@@ -321,49 +325,49 @@ private:
       }
     }
   }*/
-  void ComputeComponents(llvm::raw_ostream &os = llvm::errs()){
+  void ComputeComponents(llvm::raw_ostream &os = llvm::errs()) {
     mlir::SmallVector<unsigned> Visited;
-    numComponents=0;
+    numComponents = 0;
     std::size_t numNodes = topology.getNumNodes();
     ComponentMap.resize(numNodes);
     for (unsigned n = 0; n < numNodes; ++n) {
-      if (!llvm::is_contained(Visited, n)){
+      if (!llvm::is_contained(Visited, n)) {
         Visited.push_back(n);
         numComponents++;
-        //os<<"disconnected node "<<n<<"\n";
-        ComponentMap[n]=numComponents;
+        // os<<"disconnected node "<<n<<"\n";
+        ComponentMap[n] = numComponents;
         for (auto m = n + 1; m < numNodes; ++m) {
-          if (getWeightedDistance(Qubit(n),Qubit(m))<remoteRatio){
+          if (getWeightedDistance(Qubit(n), Qubit(m)) < remoteRatio) {
             Visited.push_back(m);
-            ComponentMap[m]=numComponents;
+            ComponentMap[m] = numComponents;
           }
         }
-
       }
     }
   }
-  void DFSUtil(unsigned v, mlir::SmallVector<bool> &Visited,llvm::raw_ostream &os = llvm::errs()){
-    //os<<"visited "<<v<<"\n";
-    Visited[v]=true;
-    auto node=topology.retrieveNode(v);
-    for (auto neighbour : topology.getNeighbours(node)){
-      if (!Visited[neighbour.index]){
+  void DFSUtil(unsigned v, mlir::SmallVector<bool> &Visited,
+               llvm::raw_ostream &os = llvm::errs()) {
+    // os<<"visited "<<v<<"\n";
+    Visited[v] = true;
+    auto node = topology.retrieveNode(v);
+    for (auto neighbour : topology.getNeighbours(node)) {
+      if (!Visited[neighbour.index]) {
         DFSUtil(neighbour.index, Visited);
       }
     }
   }
-  void ComputeComponentsinit(llvm::raw_ostream &os = llvm::errs()){
-    numComponents=0;
+  void ComputeComponentsinit(llvm::raw_ostream &os = llvm::errs()) {
+    numComponents = 0;
     std::size_t numNodes = topology.getNumNodes();
-    mlir::SmallVector<bool> Visited(numNodes,false);
+    mlir::SmallVector<bool> Visited(numNodes, false);
     ComponentMap.resize(numNodes);
-    unsigned int prev=0;
+    unsigned int prev = 0;
     DFSUtil(0, Visited);
     for (unsigned n = 1; n < numNodes; ++n) {
-      if (Visited[n]==false){
+      if (Visited[n] == false) {
         topology.addWeightedEdge(Qubit(prev), Qubit(n), remoteRatio);
-        prev=n;
-        //os<<"disconnected node "<<n<<"\n";
+        prev = n;
+        // os<<"disconnected node "<<n<<"\n";
         DFSUtil(n, Visited);
       }
     }
@@ -373,30 +377,29 @@ private:
     shortestPaths.resize(numNodes * (numNodes + 1) / 2);
     shortestPathsWeights.resize(numNodes * (numNodes + 1) / 2);
     mlir::SmallVector<Qubit> path(numNodes);
-    int weights=0;
+    int weights = 0;
     for (unsigned n = 0; n < numNodes; ++n) {
       auto [parents, distance] = dijkstra(topology, Qubit(n), remoteRatio);
       // Reconstruct the paths
       for (auto m = n + 1; m < numNodes; ++m) {
-        weights=0;
+        weights = 0;
         path.clear();
         path.push_back(Qubit(m));
         auto p = parents[m];
-        if (p==Qubit(n)){
-          int check =0;
-          for (auto neighbour : topology.getNeighbours(Qubit(n))){
-            if (neighbour==Qubit(m)){
-              check=1;
+        if (p == Qubit(n)) {
+          int check = 0;
+          for (auto neighbour : topology.getNeighbours(Qubit(n))) {
+            if (neighbour == Qubit(m)) {
+              check = 1;
             }
           }
-          if (check==0){
-            weights+=remoteRatio;
+          if (check == 0) {
+            weights += remoteRatio;
           }
-          
         }
         while (p != Qubit(n)) {
           path.push_back(p);
-          weights+=1;
+          weights += 1;
           p = parents[p.index];
         }
         path.push_back(Qubit(n));

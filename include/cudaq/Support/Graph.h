@@ -16,8 +16,8 @@ namespace cudaq {
 /// \p graph. The return vector `vec[i]` contains the next node in path to
 /// `src`. If `vec[i] == src`, then it is either an immediate neighbor, or there
 /// is no path to get there (i.e. the graph is bipartite).
-inline mlir::SmallVector<GraphCSR::Node> getShortestPathsBFS(const GraphCSR &graph,
-                                                      GraphCSR::Node src) {
+inline mlir::SmallVector<GraphCSR::Node>
+getShortestPathsBFS(const GraphCSR &graph, GraphCSR::Node src) {
   assert(src.isValid() && "Invalid source node");
   mlir::SmallVector<bool> discovered(graph.getNumNodes(), false);
   mlir::SmallVector<GraphCSR::Node> parents(graph.getNumNodes(), src);
@@ -38,55 +38,51 @@ inline mlir::SmallVector<GraphCSR::Node> getShortestPathsBFS(const GraphCSR &gra
   return parents;
 }
 
-
 // Function that implements Dijkstra's single source
 // shortest path algorithm for a graph
 
-inline std::tuple<mlir::SmallVector<GraphCSR::Node>, mlir::SmallVector<int>> dijkstra(const GraphCSR &graph,
-                                                      GraphCSR::Node src, unsigned int remoteRatio)
-{
+inline std::tuple<mlir::SmallVector<GraphCSR::Node>, mlir::SmallVector<int>>
+dijkstra(const GraphCSR &graph, GraphCSR::Node src, unsigned int remoteRatio) {
   mlir::SmallVector<bool> discovered(graph.getNumNodes(), false);
   mlir::SmallVector<GraphCSR::Node> parents(graph.getNumNodes(), src);
   mlir::SmallVector<int> distance(graph.getNumNodes(), INT_MAX);
   mlir::SmallVector<GraphCSR::Node> queue;
-  //llvm::raw_ostream &os = llvm::errs();
+  // llvm::raw_ostream &os = llvm::errs();
   queue.reserve(graph.getNumNodes());
   queue.push_back(src);
-  distance[src.index]=0;
-  //std::size_t begin = 0;
-  for (std::size_t i=0; i<graph.getNumNodes();i++){
-    int min=INT_MAX,min_index=src.index;
-    for (std::size_t v=0;v<graph.getNumNodes();v++){
-      //os<<"Checking index in dijkstra "<<v<<"\n";
-      if (discovered[v]){
+  distance[src.index] = 0;
+  // std::size_t begin = 0;
+  for (std::size_t i = 0; i < graph.getNumNodes(); i++) {
+    int min = INT_MAX, min_index = src.index;
+    for (std::size_t v = 0; v < graph.getNumNodes(); v++) {
+      // os<<"Checking index in dijkstra "<<v<<"\n";
+      if (discovered[v]) {
         continue;
       }
-      if (distance[v]<=min){
-        min=distance[v],min_index=v;
+      if (distance[v] <= min) {
+        min = distance[v], min_index = v;
       }
     }
-    discovered[min_index]=true;
-    //os<<"min index and weight "<<min_index<<" "<<min<<"\n";
-    auto node=graph.retrieveNode(min_index);
-    int count=0;
-    mlir::ArrayRef<int> neighweights=graph.getNeighboursWeights(node);
-    for (auto neighbour : graph.getNeighbours(node)){
-      int new_dist= min+neighweights[count];
-     // os<<"neighbor index and weight "<<neighbour.index<<" "<<new_dist<<"\n";
+    discovered[min_index] = true;
+    // os<<"min index and weight "<<min_index<<" "<<min<<"\n";
+    auto node = graph.retrieveNode(min_index);
+    int count = 0;
+    mlir::ArrayRef<int> neighweights = graph.getNeighboursWeights(node);
+    for (auto neighbour : graph.getNeighbours(node)) {
+      int new_dist = min + neighweights[count];
+      // os<<"neighbor index and weight "<<neighbour.index<<" "<<new_dist<<"\n";
       count++;
-      if (discovered[neighbour.index]){
+      if (discovered[neighbour.index]) {
         continue;
       }
-      if (new_dist< distance[neighbour.index]){
-        distance[neighbour.index]=new_dist;
-        parents[neighbour.index]=node;
+      if (new_dist < distance[neighbour.index]) {
+        distance[neighbour.index] = new_dist;
+        parents[neighbour.index] = node;
       }
     }
-
   }
 
-  return std::make_tuple(parents,distance);
+  return std::make_tuple(parents, distance);
 }
-
 
 } // namespace cudaq

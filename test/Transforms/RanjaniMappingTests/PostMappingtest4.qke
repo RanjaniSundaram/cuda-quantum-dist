@@ -1,5 +1,5 @@
 module {
-  func.func @new_function() attributes {mapping_reorder_idx = [7, 1, 6, 2, 4, 0, 5, 3], mapping_v2p = [4, 5, 3, 1, 2, 0, 7, 6]} {
+  func.func @new_function() attributes {mapping_reorder_idx = [5, 0, 4, 1, 3, 2, 6, 7], mapping_v2p = [5, 3, 4, 1, 0, 2, 6, 7]} {
     %0 = quake.null_wire
     %1 = quake.null_wire
     %2 = quake.null_wire
@@ -15,61 +15,47 @@ module {
     %12:2 = quake.x [%10] %8#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
     %13:2 = quake.x [%12#1] %9 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
     %14:2 = quake.x [%3] %5 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %15:2 = quake.x [%4] %14#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %16:2 = quake.x [%15#0] %14#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %17 = quake.h %11#0 : (!quake.wire) -> !quake.wire
-    %18:2 = quake.swap %13#1, %13#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %19:2 = quake.swap %18#0, %11#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %20:2 = quake.swap %19#0, %17 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %21:2 = quake.swap %12#0, %19#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %22:2 = quake.swap %21#0, %15#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %23:2 = quake.swap %22#0, %16#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %24:2 = quake.swap %18#1, %22#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %25:2 = quake.swap %23#1, %16#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %26:2 = quake.swap %25#1, %24#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %27:2 = quake.swap %26#0, %24#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %28:2 = quake.swap %27#1, %26#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %29:2 = quake.swap %20#1, %28#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %30:2 = quake.swap %29#0, %21#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %31:2 = quake.swap %30#1, %29#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %32:2 = quake.x [%25#0] %28#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %33:2 = quake.swap %31#1, %32#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %34:2 = quake.x [%23#0] %33#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %35 = quake.h %34#0 : (!quake.wire) -> !quake.wire
-    %36:2 = quake.x [%32#0] %35 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %37:2 = quake.swap %34#1, %33#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %38:2 = quake.x [%37#0] %30#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %39:2 = quake.x [%27#0] %38#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %40:2 = quake.x [%36#0] %37#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %41:2 = quake.x [%38#0] %39#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %42:2 = quake.x [%36#1] %40#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %43 = quake.h %39#1 : (!quake.wire) -> !quake.wire
-    %44:2 = quake.swap %41#0, %31#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %45:2 = quake.x [%20#0] %44#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %measOut, %wires = quake.mz %45#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %46 = quake.discriminate %measOut : (!quake.measure) -> i1
-    %measOut_0, %wires_1 = quake.mz %42#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %47 = quake.discriminate %measOut_0 : (!quake.measure) -> i1
-    %measOut_2, %wires_3 = quake.mz %45#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %48 = quake.discriminate %measOut_2 : (!quake.measure) -> i1
-    %measOut_4, %wires_5 = quake.mz %40#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %49 = quake.discriminate %measOut_4 : (!quake.measure) -> i1
-    %measOut_6, %wires_7 = quake.mz %41#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %50 = quake.discriminate %measOut_6 : (!quake.measure) -> i1
-    %measOut_8, %wires_9 = quake.mz %42#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %51 = quake.discriminate %measOut_8 : (!quake.measure) -> i1
-    %measOut_10, %wires_11 = quake.mz %43 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %52 = quake.discriminate %measOut_10 : (!quake.measure) -> i1
-    %measOut_12, %wires_13 = quake.mz %44#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
-    %53 = quake.discriminate %measOut_12 : (!quake.measure) -> i1
-    quake.sink %wires_9 : !quake.wire
+    %15:2 = quake.x [%12#0] %13#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %16:2 = quake.x [%4] %14#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %17 = quake.h %15#0 : (!quake.wire) -> !quake.wire
+    %18:2 = quake.x [%16#0] %14#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %19 = quake.h %11#0 : (!quake.wire) -> !quake.wire
+    %20:2 = quake.x [%18#1] %16#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %21:2 = quake.swap %17, %18#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %22:2 = quake.swap %19, %21#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %23:2 = quake.x [%15#1] %22#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %24:2 = quake.x [%22#0] %23#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %25:2 = quake.x [%20#0] %21#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %26:2 = quake.x [%25#0] %20#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %27:2 = quake.x [%25#1] %26#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %28 = quake.h %24#1 : (!quake.wire) -> !quake.wire
+    %29:2 = quake.swap %24#0, %28 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %30:2 = quake.x [%23#0] %29#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %31:2 = quake.x [%13#1] %30#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %measOut, %wires = quake.mz %31#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %32 = quake.discriminate %measOut : (!quake.measure) -> i1
+    %measOut_0, %wires_1 = quake.mz %27#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %33 = quake.discriminate %measOut_0 : (!quake.measure) -> i1
+    %measOut_2, %wires_3 = quake.mz %31#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %34 = quake.discriminate %measOut_2 : (!quake.measure) -> i1
+    %measOut_4, %wires_5 = quake.mz %26#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %35 = quake.discriminate %measOut_4 : (!quake.measure) -> i1
+    %measOut_6, %wires_7 = quake.mz %30#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %36 = quake.discriminate %measOut_6 : (!quake.measure) -> i1
+    %measOut_8, %wires_9 = quake.mz %27#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %37 = quake.discriminate %measOut_8 : (!quake.measure) -> i1
+    %measOut_10, %wires_11 = quake.mz %29#0 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %38 = quake.discriminate %measOut_10 : (!quake.measure) -> i1
+    %measOut_12, %wires_13 = quake.mz %11#1 : (!quake.wire) -> (!quake.measure, !quake.wire)
+    %39 = quake.discriminate %measOut_12 : (!quake.measure) -> i1
     quake.sink %wires_1 : !quake.wire
     quake.sink %wires_5 : !quake.wire
-    quake.sink %wires_13 : !quake.wire
+    quake.sink %wires_9 : !quake.wire
     quake.sink %wires_7 : !quake.wire
-    quake.sink %wires_11 : !quake.wire
     quake.sink %wires_3 : !quake.wire
     quake.sink %wires : !quake.wire
+    quake.sink %wires_11 : !quake.wire
+    quake.sink %wires_13 : !quake.wire
     return
   }
 }

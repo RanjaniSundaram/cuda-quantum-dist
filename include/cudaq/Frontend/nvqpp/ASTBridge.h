@@ -169,7 +169,7 @@ public:
       return emittedFunc.first;
     return generateCudaqKernelName(emittedFunc.second);
   }
-  
+
   //===--------------------------------------------------------------------===//
   // Decl nodes to lower to Quake.
   //===--------------------------------------------------------------------===//

@@ -205,17 +205,21 @@ LogicalResult SabreRouter::mapOperation(VirtualOp &virtOp) {
   // An operation cannot be mapped if it is not a measurement and uses two
   // qubits virtual qubit that are no adjacently placed.
   if (!virtOp.op->hasTrait<QuantumMeasure>() && deviceQubits.size() == 2 &&
-      !device.areConnected(deviceQubits[0], deviceQubits[1])){
-    LLVM_DEBUG(logger.getOStream() << " Map FAILURE\n"<< deviceQubits[0] <<" "<< deviceQubits[1]);
-    return failure();}
+      !device.areConnected(deviceQubits[0], deviceQubits[1])) {
+    LLVM_DEBUG(logger.getOStream()
+               << " Map FAILURE\n"
+               << deviceQubits[0] << " " << deviceQubits[1]);
+    return failure();
+  }
 
   // Rewire the operation.
   SmallVector<Value, 2> newOpWires;
   for (auto phy : deviceQubits)
     newOpWires.push_back(phyToWire[phy.index]);
-  if (failed(quake::setQuantumOperands(virtOp.op, newOpWires))){
+  if (failed(quake::setQuantumOperands(virtOp.op, newOpWires))) {
     LLVM_DEBUG(logger.getOStream() << "Secondary Map FAILURE\n");
-    return failure();}
+    return failure();
+  }
 
   if (isa<quake::SinkOp>(virtOp.op))
     return success();
@@ -407,7 +411,8 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
 
     LLVM_DEBUG({
       logger.getOStream() << "\n";
-      logger.getOStream() << "" << " baaaaaaaa\n";
+      logger.getOStream() << ""
+                          << " baaaaaaaa\n";
       logger.startLine() << logLineComment;
     });
 
@@ -613,7 +618,10 @@ struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
           // Don't use wireToVirtualQ[a] = wireToVirtualQ[b]. It will work
           // *most* of the time but cause memory corruption other times because
           // DenseMap references can be invalidated upon insertion of new pairs.
-          wireToVirtualQ.insert({newWire, wireToVirtualQ[wire]}); // Ranjani: Is this what Eric was talking about- infinite wires?
+          wireToVirtualQ.insert(
+              {newWire,
+               wireToVirtualQ[wire]}); // Ranjani: Is this what Eric was talking
+                                       // about- infinite wires?
           finalQubitWire[wireToVirtualQ[wire].index] = newWire;
         }
       }
@@ -767,7 +775,6 @@ struct Mapper : public cudaq::opt::impl::DistMappingPassBase<Mapper> {
                            placement.getPhy(Placement::VirtualQ(v)).index);
 
     func->setAttr("mapping_v2p", builder.getArrayAttr(attrs));
-
 
     // Now populate mapping_reorder_idx attribute. This attribute will be used
     // by downstream processing to reconstruct a global register as if mapping

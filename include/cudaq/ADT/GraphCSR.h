@@ -48,9 +48,7 @@ public:
     return node;
   }
 
-  Node retrieveNode(int index) const{
-    return vertices[index];
-  }
+  Node retrieveNode(int index) const { return vertices[index]; }
   void addEdge(Node src, Node dst, bool undirected = true) {
     assert(src.isValid() && "Invalid source node");
     assert(dst.isValid() && "Invalid destination node");
@@ -59,7 +57,8 @@ public:
       addEdgeImpl(dst, src);
   }
 
-  void addWeightedEdge(Node src, Node dst, int weight=1, bool undirected = true) {
+  void addWeightedEdge(Node src, Node dst, int weight = 1,
+                       bool undirected = true) {
     assert(src.isValid() && "Invalid source node");
     assert(dst.isValid() && "Invalid destination node");
     addEdgeImplWeighted(src, dst, weight);
@@ -76,7 +75,7 @@ public:
     auto begin = edges.begin() + nodeOffsets[node.index];
     auto end = node == Node(getNumNodes() - 1)
                    ? edges.end()
-                   : edges.begin() + nodeOffsets[node.index +1];
+                   : edges.begin() + nodeOffsets[node.index + 1];
     return mlir::ArrayRef<Node>(begin, end);
   }
 
@@ -85,8 +84,8 @@ public:
     auto begin = weights.begin() + nodeOffsets[node.index];
     auto end = node == Node(getNumNodes() - 1)
                    ? weights.end()
-                   : weights.begin() + nodeOffsets[node.index +1];
-    
+                   : weights.begin() + nodeOffsets[node.index + 1];
+
     return mlir::ArrayRef<int>(begin, end);
   }
 

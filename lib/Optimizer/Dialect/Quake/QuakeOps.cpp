@@ -127,20 +127,20 @@ LogicalResult quake::setQuantumOperands(Operation *op, ValueRange quantumVals) {
   return success();
 }
 
-void quake::AsyncScopeOp::build(OpBuilder &builder, OperationState &result, IntegerAttr qpuId) {
+void quake::AsyncScopeOp::build(OpBuilder &builder, OperationState &result,
+                                IntegerAttr qpuId) {
   auto *bodyRegion = result.addRegion();
   bodyRegion->push_back(new Block);
   auto &bodyBlock = bodyRegion->front();
   OpBuilder::InsertionGuard guard(builder);
   builder.setInsertionPointToStart(&bodyBlock);
-  //builder.create<quake::AsyncContinueOp>(result.location);
+  // builder.create<quake::AsyncContinueOp>(result.location);
 }
-
 
 void quake::AsyncScopeOp::print(OpAsmPrinter &p) {
   bool printBlockTerminators = getRegion().getBlocks().size() > 1;
   if (!getResults().empty()) {
-    p << " -> (" << getResultTypes() << getQpuIdAttr()<< "boooo)";
+    p << " -> (" << getResultTypes() << getQpuIdAttr() << "boooo)";
     // Print terminator explicitly if the op defines values.
     printBlockTerminators = true;
   }
@@ -167,7 +167,7 @@ static void ensureScopeRegionTerminator(OpBuilder &builder,
 }
 
 ParseResult quake::AsyncScopeOp::parse(OpAsmParser &parser,
-                                      OperationState &result) {
+                                       OperationState &result) {
   if (parser.parseOptionalArrowTypeList(result.types))
     return failure();
   auto *body = result.addRegion();

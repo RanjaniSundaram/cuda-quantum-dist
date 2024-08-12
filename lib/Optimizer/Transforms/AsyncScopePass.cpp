@@ -1,23 +1,23 @@
 
+#include "cudaq/ADT/GraphCSR.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Optimizer/Transforms/Passes.h"
-#include "cudaq/ADT/GraphCSR.h"
-#include "cudaq/Support/Graph.h"
 #include "cudaq/Support/Device.h"
+#include "cudaq/Support/Graph.h"
 #include "cudaq/Support/Placement.h"
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/ScopedPrinter.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
-#include "mlir/Transforms/TopologicalSortUtils.h"
+#include "mlir/IR/Block.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/BuiltinOps.h"
+#include "mlir/IR/IRMapping.h"
 #include "mlir/IR/MLIRContext.h"
 #include "mlir/IR/Value.h"
-#include "mlir/IR/Block.h"
-#include "mlir/IR/IRMapping.h"
 #include "mlir/Transforms/DialectConversion.h"
+#include "mlir/Transforms/TopologicalSortUtils.h"
 
 #define DEBUG_TYPE "quantum-scoper"
 
@@ -35,12 +35,13 @@ using cudaq::QuantumMeasure;
 namespace cudaq::opt {
 #define GEN_PASS_DEF_ASYNCSCOPEPASS
 #include "cudaq/Optimizer/Transforms/Passes.h.inc"
-}
+} // namespace cudaq::opt
 
 // bool hasDependencies(mlir::Operation *op) {
-//     // Placeholder: checks if there are any operands that are defined by operations in the same block
-//     for (auto operand : op->getOperands()) {
-//         if (operand.getDefiningOp() && operand.getDefiningOp()->getBlock() == op->getBlock()) {
+//     // Placeholder: checks if there are any operands that are defined by
+//     operations in the same block for (auto operand : op->getOperands()) {
+//         if (operand.getDefiningOp() && operand.getDefiningOp()->getBlock() ==
+//         op->getBlock()) {
 //             return true;
 //         }
 //     }
@@ -60,7 +61,8 @@ namespace cudaq::opt {
 //     return dependencies;
 // }
 
-// std::vector<std::vector<mlir::Operation*>> analyzeAndLayerOperations(IRMapping mapper, mlir::Block& block) {
+// std::vector<std::vector<mlir::Operation*>>
+// analyzeAndLayerOperations(IRMapping mapper, mlir::Block& block) {
 //   std::vector<std::vector<mlir::Operation*>> layers;
 //   std::map<mlir::Operation*, size_t> operationToLayer;
 //     for (auto &op : block) {
@@ -101,13 +103,15 @@ namespace cudaq::opt {
 //         std::vector<mlir::Operation*> currentLayer;
 
 //         for (auto &op : block) {
-//             if (operationToLayer.find(&op) != operationToLayer.end()) continue; // Already placed in a layer
+//             if (operationToLayer.find(&op) != operationToLayer.end())
+//             continue; // Already placed in a layer
 
 //             int dependencyLayer = -1;
 //             // Assuming a function exists to retrieve operation dependencies
 //             for (auto dep : getDependencies(&op)) {
 //                 if (operationToLayer.find(dep) != operationToLayer.end()) {
-//                     dependencyLayer = std::max(dependencyLayer, int(operationToLayer[dep]));
+//                     dependencyLayer = std::max(dependencyLayer,
+//                     int(operationToLayer[dep]));
 //                 }
 //             }
 
@@ -136,11 +140,13 @@ namespace cudaq::opt {
 // }
 
 // // Function to create a new block based on operation layers
-// mlir::Block* createBlockFromLayers(mlir::OpBuilder& builder, mlir::Block& block) {
+// mlir::Block* createBlockFromLayers(mlir::OpBuilder& builder, mlir::Block&
+// block) {
 //     // Create a new block
 //     auto *newBlock = new Block();
 //     IRMapping mapper;
-//     for (auto argPair : llvm::zip(block.getArguments(), (*newBlock).getArguments())) {
+//     for (auto argPair : llvm::zip(block.getArguments(),
+//     (*newBlock).getArguments())) {
 //       mapper.map(std::get<0>(argPair), std::get<1>(argPair));
 //     }
 //     auto layers= analyzeAndLayerOperations(mapper, block);
@@ -153,22 +159,25 @@ namespace cudaq::opt {
 //             for (size_t i = 0, e = (op)->getNumResults(); i < e; ++i) {
 //                 mapper.map((op)->getResult(i), clonedOp->getResult(i));
 //             }
-//             LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: in layer"<<op<<"\n");
+//             LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: in
+//             layer"<<op<<"\n");
 //         }
 //     }
 //     for (Operation *cloned : (newBlock).getOperations()) {
 //       for (OpOperand &opOper : cloned->getOpOperands())
 //           if (Value mappedValue = mapper.lookupOrNull(opOper.get()))
-//               rewriter.updateRootInPlace(cloned, [&]() { opOper.set(mappedValue); });
+//               rewriter.updateRootInPlace(cloned, [&]() {
+//               opOper.set(mappedValue); });
 //     }
 
 //     return newBlock;
 // }
 
 namespace {
-  
-struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePass> {
-  using AsyncScopePassBase::AsyncScopePassBase;  
+
+struct AsyncScopePass
+    : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePass> {
+  using AsyncScopePassBase::AsyncScopePassBase;
   std::size_t deviceDim[2];
 
   enum DeviceTopologyEnum { Unknown, Path, Ring, Star, Grid, File, Bypass };
@@ -176,7 +185,7 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
 
   /// If the deviceTopoType is File, this is the path to the file.
   StringRef deviceFilename;
-    virtual LogicalResult initialize(MLIRContext *context) override {
+  virtual LogicalResult initialize(MLIRContext *context) override {
     // Initialize prior to parsing
     deviceDim[0] = deviceDim[1] = 0;
 
@@ -250,9 +259,10 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: entered run op\n");
     auto func = getOperation();
 
-
     // Assuming mapping_v2p is available globally or passed as an attribute
-    auto mapping_v2p= dyn_cast_if_present<ArrayAttr>(func->getAttr("mapping_v2p")).getValue(); // Example mapping
+    auto mapping_v2p =
+        dyn_cast_if_present<ArrayAttr>(func->getAttr("mapping_v2p"))
+            .getValue(); // Example mapping
 
     // Group operations by their QPU mapping
 
@@ -262,7 +272,7 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     SmallVector<Operation *> Measurements;
     SmallVector<std::size_t> userQubitsMeasured;
     OpBuilder builder2(func);
-      std::size_t x = deviceDim[0];
+    std::size_t x = deviceDim[0];
     std::size_t y = deviceDim[1];
     std::size_t deviceNumQubits = deviceTopoType == Grid ? x * y : x;
 
@@ -280,8 +290,8 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     // you update this, be sure to update that as well.
     Device d;
     if (deviceTopoType == Path)
-      //d = Device::path(x);
-      d = Device::path2(x,y);
+      // d = Device::path(x);
+      d = Device::path2(x, y);
     else if (deviceTopoType == Ring)
       d = Device::ring(x);
     else if (deviceTopoType == Star)
@@ -311,182 +321,212 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     // SmallVector< SmallVector<Operation *>> qpuGroups;
     // SmallVector<Operation *> CurrentVector;
     // mlir::SmallVector<int> AsyncComponentIds;
-    SmallVector<std::tuple<int,int>> RemoteQPUIds;
-    unsigned int numComponents= d.getNumComponents();
-    SmallVector<SmallVector< SmallVector<Operation *>>> qpuGroups2;
-    qpuGroups2.resize(numComponents+1);
-    SmallVector< SmallVector<Operation *>> CurrentVectors;
-    CurrentVectors.resize(numComponents+1);
-    SmallVector<std::tuple<int,int>> orderedBlocks;
-    SmallVector<unsigned int> indices(numComponents+1, 0);
-    //indices.reserve(numComponents+1);
-    //int numBlocks=0;
-    //int currentComponent=-1;
-    // auto newBlock=createBlockFromLayers(builder2,func.front());
-    // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: NewBlock"<<"\n");
-    // for (auto& op : *newBlock) {
-    //  LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: New block operations"<<op<<"\n");
-    // }
+    SmallVector<std::tuple<int, int>> RemoteQPUIds;
+    unsigned int numComponents = d.getNumComponents();
+    SmallVector<SmallVector<SmallVector<Operation *>>> qpuGroups2;
+    qpuGroups2.resize(numComponents + 1);
+    SmallVector<SmallVector<Operation *>> CurrentVectors;
+    CurrentVectors.resize(numComponents + 1);
+    SmallVector<std::tuple<int, int>> orderedBlocks;
+    SmallVector<unsigned int> indices(numComponents + 1, 0);
+    // indices.reserve(numComponents+1);
+    // int numBlocks=0;
+    // int currentComponent=-1;
+    //  auto newBlock=createBlockFromLayers(builder2,func.front());
+    //  LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: NewBlock"<<"\n");
+    //  for (auto& op : *newBlock) {
+    //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: New block
+    //   operations"<<op<<"\n");
+    //  }
     func.walk([&](Operation *op) {
-      LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: walking operations"<<op<<"\n");
-      int i=0;
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Ranjani checking: walking operations" << op << "\n");
+      int i = 0;
       Value prev;
       if (auto qop = dyn_cast<quake::AllocaOp>(op)) {
         // Assign a new virtual qubit to the resulting wire.
         wireToVirtualQ[qop.getResult()] = Placement::VirtualQ(sources.size());
-        LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: walking operations"<<op<<"\n");
+        LLVM_DEBUG(llvm::dbgs()
+                   << "Ranjani checking: walking operations" << op << "\n");
         sources.push_back(qop);
       } else if (quake::isSupportedMappingOperation(op)) {
-          if (isa<quake::SinkOp>(op)) {
-            sinksToRemove.push_back(op);
+        if (isa<quake::SinkOp>(op)) {
+          sinksToRemove.push_back(op);
+        }
+        if (isa<quake::MeasurementInterface>(op)) {
+          auto wireOperands = quake::getQuantumOperands(op);
+          for (const auto &wire : wireOperands)
+            userQubitsMeasured.push_back(wireToVirtualQ[wire].index);
+        }
+        // else {
+        //   auto wireOperands = quake::getQuantumOperands(op);
+        //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: zip"
+        //   <<quake::getQuantumResults(op).size()<<" "<<wireOperands.size()<<"
+        //   "<<"\n"); for (auto &&[wire, newWire] :
+        //       llvm::zip_equal(wireOperands, quake::getQuantumResults(op))) {
+        //     // Don't use wireToVirtualQ[a] = wireToVirtualQ[b]. It will work
+        //     // *most* of the time but cause memory corruption other times
+        //     because
+        //     // DenseMap references can be invalidated upon insertion of new
+        //     pairs. wireToVirtualQ.insert({newWire, wireToVirtualQ[wire]}); //
+        //     Ranjani: Is this what Eric was talking about- infinite wires?
+        //   }
+        // }
+
+        LLVM_DEBUG(llvm::dbgs()
+                   << "Ranjani checking: finished preprocessing\n");
+        // llvm::errs()
+        for (auto wireOp : quake::getQuantumOperands(op)) {
+          // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: zip" <<wireOp<<"\n");
+          if (i == 0) {
+            prev = wireOp;
+            i++;
+            // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop IF
+            // "<<"\n");
+
+            if (quake::getQuantumOperands(op).size() == 1) {
+              auto q1 = static_cast<unsigned int>(
+                  mapping_v2p[wireToVirtualQ[prev].index]
+                      .dyn_cast<mlir::IntegerAttr>()
+                      .getInt());
+              LLVM_DEBUG(llvm::dbgs()
+                         << "Ranjani checking: In loop " << q1 << "\n");
+              LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: location "
+                                      << d.getComponent(q1) << "\n");
+              if (isa<quake::MeasurementInterface>(op)) {
+                Measurements.push_back(op);
+              }
+              // else if (!(d.getComponent(q1)==currentComponent)) {
+              //   // numBlocks++;
+              //   // //currentComponent=d.getComponent(q1);
+              //   // qpuGroups.push_back(CurrentVector);
+              //   // CurrentVector.clear();
+              //   // CurrentVector.push_back(op);
+              //   // AsyncComponentIds.push_back(currentComponent);
+              //   CurrentVectors[d.getComponent(q1)].push_back(op);
+              // }
+              else {
+                // CurrentVector.push_back(op);
+                CurrentVectors[d.getComponent(q1)].push_back(op);
+              }
+            }
+            continue;
           }
-          if (isa<quake::MeasurementInterface>(op)){
-            auto wireOperands = quake::getQuantumOperands(op);
-            for (const auto &wire : wireOperands)
-              userQubitsMeasured.push_back(wireToVirtualQ[wire].index);
+          auto q1 =
+              static_cast<unsigned int>(mapping_v2p[wireToVirtualQ[prev].index]
+                                            .dyn_cast<mlir::IntegerAttr>()
+                                            .getInt());
+          auto q2 = static_cast<unsigned int>(
+              mapping_v2p[wireToVirtualQ[wireOp].index]
+                  .dyn_cast<mlir::IntegerAttr>()
+                  .getInt());
+          LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop virtual "
+                                  << wireToVirtualQ[prev].index << " "
+                                  << wireToVirtualQ[wireOp].index << "\n");
+          LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop " << q1 << " "
+                                  << q2 << "\n");
+          // auto q1=static_cast<unsigned int>(
+          // mapping_v2p[wireToVirtualQ[prev].index].dyn_cast<mlir::IntegerAttr>().getInt());
+          // auto q2= static_cast<unsigned int>(
+          // mapping_v2p[wireToVirtualQ[wireOp].index].dyn_cast<mlir::IntegerAttr>().getInt());
+          // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop "<<q1<<"
+          // "<<q2<<"\n");
+          if (!(d.getComponent(q1) == d.getComponent(q2))) {
+            unsigned int qpu1 = d.getComponent(q1);
+            unsigned int qpu2 = d.getComponent(q2);
+            LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop push vector "
+                                    << qpu1 << " " << qpu2 << "\n");
+            if (!CurrentVectors[qpu1].empty()) {
+              qpuGroups2[qpu1].push_back(CurrentVectors[qpu1]);
+              LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In if \n");
+              orderedBlocks.push_back(std::make_tuple(qpu1, indices[qpu1]));
+              LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In if \n");
+              indices[qpu1]++;
+            }
+            CurrentVectors[qpu1].clear();
+            LLVM_DEBUG(llvm::dbgs()
+                       << "Ranjani checking: In loop push vector 2\n");
+            if (!CurrentVectors[qpu2].empty()) {
+              qpuGroups2[qpu2].push_back(CurrentVectors[qpu2]);
+              orderedBlocks.push_back(std::make_tuple(qpu2, indices[qpu2]));
+              indices[qpu2]++;
+            }
+            CurrentVectors[qpu2].clear();
+            qpuGroups2[0].push_back({op});
+            orderedBlocks.push_back(std::make_tuple(0, indices[0]));
+            indices[0]++;
+            RemoteQPUIds.push_back(
+                std::make_tuple(d.getComponent(q1), d.getComponent(q2)));
+          } else {
+            unsigned int qpu = d.getComponent(q1);
+            CurrentVectors[qpu].push_back(op);
           }
-          // else {
-          //   auto wireOperands = quake::getQuantumOperands(op);
-          //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: zip" <<quake::getQuantumResults(op).size()<<" "<<wireOperands.size()<<" "<<"\n");
-          //   for (auto &&[wire, newWire] :
-          //       llvm::zip_equal(wireOperands, quake::getQuantumResults(op))) {
-          //     // Don't use wireToVirtualQ[a] = wireToVirtualQ[b]. It will work
-          //     // *most* of the time but cause memory corruption other times because
-          //     // DenseMap references can be invalidated upon insertion of new pairs.
-          //     wireToVirtualQ.insert({newWire, wireToVirtualQ[wire]}); // Ranjani: Is this what Eric was talking about- infinite wires?
+          // if (!(d.getComponent(q1)==currentComponent)) {
+          //   if (d.getComponent(q1)==d.getComponent(q2)){
+          //     int qpu = d.getComponent(q1);
+          //     currentComponent=qpu;
+          //     numBlocks++;
+          //     qpuGroups.push_back(CurrentVector);
+          //     CurrentVector.clear();
+          //     CurrentVector.push_back(op);
+          //     AsyncComponentIds.push_back(currentComponent);
+          //   }
+          //   else{
+
+          //     currentComponent=-1;
+          //     numBlocks++;
+          //     qpuGroups.push_back(CurrentVector);
+          //     CurrentVector.clear();
+          //     CurrentVector.push_back(op);
+          //     AsyncComponentIds.push_back(currentComponent);
+          //     LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: remote gate
+          //     "<<q1<<" "<<q2<<"\n");
+          //     RemoteQPUIds.push_back(std::make_tuple(d.getComponent(q1),d.getComponent(q2)));
           //   }
           // }
-        
-
-          LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: finished preprocessing\n");
-        //llvm::errs()
-          for (auto wireOp : quake::getQuantumOperands(op)) {
-            //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: zip" <<wireOp<<"\n");
-            if (i==0){
-              prev=wireOp;
-              i++;
-              //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop IF "<<"\n");
-
-              if(quake::getQuantumOperands(op).size()==1){
-                auto q1=static_cast<unsigned int>( mapping_v2p[wireToVirtualQ[prev].index].dyn_cast<mlir::IntegerAttr>().getInt());
-                LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop "<<q1<<"\n");
-                LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: location "<<d.getComponent(q1)<<"\n");
-                if (isa<quake::MeasurementInterface>(op)){
-                  Measurements.push_back(op);
-                }
-                // else if (!(d.getComponent(q1)==currentComponent)) {
-                //   // numBlocks++;
-                //   // //currentComponent=d.getComponent(q1);
-                //   // qpuGroups.push_back(CurrentVector);
-                //   // CurrentVector.clear();
-                //   // CurrentVector.push_back(op);
-                //   // AsyncComponentIds.push_back(currentComponent);
-                //   CurrentVectors[d.getComponent(q1)].push_back(op);
-                // }
-                else{
-                  //CurrentVector.push_back(op);
-                  CurrentVectors[d.getComponent(q1)].push_back(op);
-                }
-              }
-              continue;
-            }
-            auto q1=static_cast<unsigned int>( mapping_v2p[wireToVirtualQ[prev].index].dyn_cast<mlir::IntegerAttr>().getInt());
-            auto q2= static_cast<unsigned int>( mapping_v2p[wireToVirtualQ[wireOp].index].dyn_cast<mlir::IntegerAttr>().getInt());
-            LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop virtual "<<wireToVirtualQ[prev].index<<" "<<wireToVirtualQ[wireOp].index<<"\n");
-            LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop "<<q1<<" "<<q2<<"\n");
-            //auto q1=static_cast<unsigned int>( mapping_v2p[wireToVirtualQ[prev].index].dyn_cast<mlir::IntegerAttr>().getInt());
-            //auto q2= static_cast<unsigned int>( mapping_v2p[wireToVirtualQ[wireOp].index].dyn_cast<mlir::IntegerAttr>().getInt());
-            //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop "<<q1<<" "<<q2<<"\n");
-            if (!(d.getComponent(q1)==d.getComponent(q2))){
-              unsigned int qpu1= d.getComponent(q1);
-              unsigned int qpu2= d.getComponent(q2);
-              LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop push vector "<<qpu1<<" "<<qpu2<<"\n");
-              if (!CurrentVectors[qpu1].empty()){
-                qpuGroups2[qpu1].push_back(CurrentVectors[qpu1]);
-                LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In if \n");
-                orderedBlocks.push_back(std::make_tuple(qpu1,indices[qpu1]));
-                LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In if \n");
-                indices[qpu1]++;
-              }
-              CurrentVectors[qpu1].clear();
-              LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop push vector 2\n");
-              if (!CurrentVectors[qpu2].empty()){
-                qpuGroups2[qpu2].push_back(CurrentVectors[qpu2]);
-                orderedBlocks.push_back(std::make_tuple(qpu2,indices[qpu2]));
-                indices[qpu2]++;
-              }
-              CurrentVectors[qpu2].clear();
-              qpuGroups2[0].push_back({op});             
-              orderedBlocks.push_back(std::make_tuple(0,indices[0]));
-              indices[0]++;
-              RemoteQPUIds.push_back(std::make_tuple(d.getComponent(q1),d.getComponent(q2)));
-            }
-            else{
-              unsigned int qpu= d.getComponent(q1);
-              CurrentVectors[qpu].push_back(op);
-            }
-            // if (!(d.getComponent(q1)==currentComponent)) {        
-            //   if (d.getComponent(q1)==d.getComponent(q2)){
-            //     int qpu = d.getComponent(q1);
-            //     currentComponent=qpu;
-            //     numBlocks++;
-            //     qpuGroups.push_back(CurrentVector);
-            //     CurrentVector.clear();
-            //     CurrentVector.push_back(op);
-            //     AsyncComponentIds.push_back(currentComponent);
-            //   }
-            //   else{
-
-            //     currentComponent=-1;
-            //     numBlocks++;
-            //     qpuGroups.push_back(CurrentVector);
-            //     CurrentVector.clear();
-            //     CurrentVector.push_back(op);
-            //     AsyncComponentIds.push_back(currentComponent);
-            //     LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: remote gate "<<q1<<" "<<q2<<"\n");
-            //     RemoteQPUIds.push_back(std::make_tuple(d.getComponent(q1),d.getComponent(q2)));
-            //   }
-            // }
-            // else{
-            //   if (d.getComponent(q1)==d.getComponent(q2)){
-            //     CurrentVector.push_back(op);
-            //   }
-            //   else{
-            //     currentComponent=-1;
-            //     numBlocks++;
-            //     qpuGroups.push_back(CurrentVector);
-            //     CurrentVector.clear();
-            //     CurrentVector.push_back(op);
-            //     AsyncComponentIds.push_back(currentComponent);
-            //     LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: remote gate "<<q1<<" "<<q2<<"\n");
-            //     RemoteQPUIds.push_back(std::make_tuple(d.getComponent(q1),d.getComponent(q2)));
-            //   }
-            // }
-          }
+          // else{
+          //   if (d.getComponent(q1)==d.getComponent(q2)){
+          //     CurrentVector.push_back(op);
+          //   }
+          //   else{
+          //     currentComponent=-1;
+          //     numBlocks++;
+          //     qpuGroups.push_back(CurrentVector);
+          //     CurrentVector.clear();
+          //     CurrentVector.push_back(op);
+          //     AsyncComponentIds.push_back(currentComponent);
+          //     LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: remote gate
+          //     "<<q1<<" "<<q2<<"\n");
+          //     RemoteQPUIds.push_back(std::make_tuple(d.getComponent(q1),d.getComponent(q2)));
+          //   }
+          // }
+        }
       }
-      
     });
     // qpuGroups.push_back(CurrentVector);
     // CurrentVector.clear();
-    for (unsigned int qpu=1; qpu<=numComponents; qpu++){
-      if (!CurrentVectors[qpu].empty()){
+    for (unsigned int qpu = 1; qpu <= numComponents; qpu++) {
+      if (!CurrentVectors[qpu].empty()) {
         qpuGroups2[qpu].push_back(CurrentVectors[qpu]);
         CurrentVectors[qpu].clear();
-        orderedBlocks.push_back(std::make_tuple(qpu,indices[qpu]));
+        orderedBlocks.push_back(std::make_tuple(qpu, indices[qpu]));
         indices[qpu]++;
       }
     }
-    //builder.setInsertionPointToEnd(asyncScopeBlock);
-    //builder.create<quake::AsyncContinueOp>(loc);
+    // builder.setInsertionPointToEnd(asyncScopeBlock);
+    // builder.create<quake::AsyncContinueOp>(loc);
     ModuleOp module = func->getParentOfType<ModuleOp>();
     OpBuilder builder(module.getBodyRegion());
     IRMapping mapping;
-    auto funcType = builder.getFunctionType(/*inputs=*/TypeRange{}, /*results=*/TypeRange{});
+    auto funcType = builder.getFunctionType(/*inputs=*/TypeRange{},
+                                            /*results=*/TypeRange{});
 
     // Create the new function
-    auto newFunc = builder.create<func::FuncOp>(func.getLoc(), "new_function", funcType);
+    auto newFunc =
+        builder.create<func::FuncOp>(func.getLoc(), "new_function", funcType);
 
-    for (auto argPair : llvm::zip(func.getArguments(), newFunc.getArguments())) {
+    for (auto argPair :
+         llvm::zip(func.getArguments(), newFunc.getArguments())) {
       mapping.map(std::get<0>(argPair), std::get<1>(argPair));
     }
     // Add a new block to the function
@@ -494,73 +534,83 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
 
     // Set the insertion point to the new block
     builder.setInsertionPointToStart(entryBlock);
-    
 
     for (Operation *op : sources) {
       auto clonedOp = op->clone(mapping);
-        //Update the mapping for the results of the cloned operation
-      for (auto [oldResult, newResult] : llvm::zip(op->getResults(), clonedOp->getResults())) {
+      // Update the mapping for the results of the cloned operation
+      for (auto [oldResult, newResult] :
+           llvm::zip(op->getResults(), clonedOp->getResults())) {
         mapping.map(oldResult, newResult);
       }
       builder.insert(clonedOp);
     }
-    //qpuGroups.erase(qpuGroups.begin());
-    //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: sources added "<<qpuGroups.size()<< '\n');
-    int remoteCount=0;
-    for (const auto& item : orderedBlocks) {
-      unsigned int i= std::get<0>(item);
-      unsigned int j= std::get<1>(item);
+    // qpuGroups.erase(qpuGroups.begin());
+    // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: sources added
+    // "<<qpuGroups.size()<< '\n');
+    int remoteCount = 0;
+    for (const auto &item : orderedBlocks) {
+      unsigned int i = std::get<0>(item);
+      unsigned int j = std::get<1>(item);
       auto loc = newFunc.getLoc();
-      int qpu=i;
-      LLVM_DEBUG(llvm::dbgs() << "block number "<<i<<j<<'\n');
-      if (i==0){
-        LLVM_DEBUG(llvm::dbgs() << "in -1 section"<<'\n');
-        builder.create<quake::SyncOp>(loc,std::get<0>( RemoteQPUIds[remoteCount]),std::get<1>(RemoteQPUIds[remoteCount]));
+      int qpu = i;
+      LLVM_DEBUG(llvm::dbgs() << "block number " << i << j << '\n');
+      if (i == 0) {
+        LLVM_DEBUG(llvm::dbgs() << "in -1 section" << '\n');
+        builder.create<quake::SyncOp>(loc,
+                                      std::get<0>(RemoteQPUIds[remoteCount]),
+                                      std::get<1>(RemoteQPUIds[remoteCount]));
         for (Operation *op : qpuGroups2[i][j]) {
-          //builder.insert(op->clone());
+          // builder.insert(op->clone());
           auto clonedOp = op->clone(mapping);
-          //Update the mapping for the results of the cloned operation
-          for (auto [oldResult, newResult] : llvm::zip(op->getResults(), clonedOp->getResults())) {
+          // Update the mapping for the results of the cloned operation
+          for (auto [oldResult, newResult] :
+               llvm::zip(op->getResults(), clonedOp->getResults())) {
             mapping.map(oldResult, newResult);
           }
           builder.insert(clonedOp);
           op->print(llvm::dbgs());
-          LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: adding ops"<<op<<'\n');
+          LLVM_DEBUG(llvm::dbgs()
+                     << "Ranjani checking: adding ops" << op << '\n');
         }
-         builder.setInsertionPointToEnd(entryBlock);
-         remoteCount++;
+        builder.setInsertionPointToEnd(entryBlock);
+        remoteCount++;
         continue;
       }
       // Create async_scope and async_scope_end
-      auto asyncScopeOp = builder.create<quake::AsyncScopeOp>(loc, builder.getI64IntegerAttr(qpu));
+      auto asyncScopeOp = builder.create<quake::AsyncScopeOp>(
+          loc, builder.getI64IntegerAttr(qpu));
       auto qpuIdAttr = builder.getI64IntegerAttr(qpu);
       asyncScopeOp->setAttr("qpuId", qpuIdAttr);
-      LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: Created async scope op"<< '\n');
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Ranjani checking: Created async scope op" << '\n');
       // Create a new block for the async_scope body
-      //Block *asyncScopeBlock = builder.createBlock(&asyncScopeOp.getRegion());
+      // Block *asyncScopeBlock =
+      // builder.createBlock(&asyncScopeOp.getRegion());
       Block *asyncScopeBlock = &asyncScopeOp.getRegion().back();
-      //size_t blockCount = asyncScopeOp.getRegion().getBlocks().size();
-      //llvm::outs() << "Number of blocks in region: " << blockCount << "\n";
+      // size_t blockCount = asyncScopeOp.getRegion().getBlocks().size();
+      // llvm::outs() << "Number of blocks in region: " << blockCount << "\n";
       builder.setInsertionPointToStart(asyncScopeBlock);
-      LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: insertion point"<< '\n');
+      LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: insertion point" << '\n');
 
       // Move operations into the new block
       for (Operation *op : qpuGroups2[i][j]) {
-        //builder.insert(op->clone());
+        // builder.insert(op->clone());
         auto clonedOp = op->clone(mapping);
-        //Update the mapping for the results of the cloned operation
-        for (auto [oldResult, newResult] : llvm::zip(op->getResults(), clonedOp->getResults())) {
+        // Update the mapping for the results of the cloned operation
+        for (auto [oldResult, newResult] :
+             llvm::zip(op->getResults(), clonedOp->getResults())) {
           mapping.map(oldResult, newResult);
         }
         builder.insert(clonedOp);
         op->print(llvm::dbgs());
-        LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: adding ops"<<op<<'\n');
+        LLVM_DEBUG(llvm::dbgs()
+                   << "Ranjani checking: adding ops" << op << '\n');
       }
 
       builder.create<quake::AsyncContinueOp>(newFunc.getLoc());
-      LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: async continue added"<< '\n');
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Ranjani checking: async continue added" << '\n');
       builder.setInsertionPointToEnd(entryBlock);
-      
     }
     // for (size_t i = 0; i < qpuGroups.size(); ++i) {
     //   auto loc = newFunc.getLoc();
@@ -569,32 +619,37 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     //   LLVM_DEBUG(llvm::dbgs() << "block number "<<blockNum<<'\n');
     //   if (qpu==-1){
     //     LLVM_DEBUG(llvm::dbgs() << "in -1 section"<<'\n');
-    //     builder.create<quake::SyncOp>(loc,std::get<0>( RemoteQPUIds[remoteCount]),std::get<1>(RemoteQPUIds[remoteCount]));
+    //     builder.create<quake::SyncOp>(loc,std::get<0>(
+    //     RemoteQPUIds[remoteCount]),std::get<1>(RemoteQPUIds[remoteCount]));
     //     for (Operation *op : qpuGroups[i]) {
     //       //builder.insert(op->clone());
     //       auto clonedOp = op->clone(mapping);
     //       //Update the mapping for the results of the cloned operation
-    //       for (auto [oldResult, newResult] : llvm::zip(op->getResults(), clonedOp->getResults())) {
+    //       for (auto [oldResult, newResult] : llvm::zip(op->getResults(),
+    //       clonedOp->getResults())) {
     //         mapping.map(oldResult, newResult);
     //       }
     //       builder.insert(clonedOp);
     //       op->print(llvm::dbgs());
-    //       LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: adding ops"<<op<<'\n');
+    //       LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: adding
+    //       ops"<<op<<'\n');
     //     }
     //      builder.setInsertionPointToEnd(entryBlock);
     //      remoteCount++;
     //     continue;
     //   }
     //   // Create async_scope and async_scope_end
-    //   auto asyncScopeOp = builder.create<quake::AsyncScopeOp>(loc, builder.getI64IntegerAttr(qpu));
-    //   auto qpuIdAttr = builder.getI64IntegerAttr(qpu);
-    //   asyncScopeOp->setAttr("qpuId", qpuIdAttr);
-    //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: Created async scope op"<<blockNum<< '\n');
+    //   auto asyncScopeOp = builder.create<quake::AsyncScopeOp>(loc,
+    //   builder.getI64IntegerAttr(qpu)); auto qpuIdAttr =
+    //   builder.getI64IntegerAttr(qpu); asyncScopeOp->setAttr("qpuId",
+    //   qpuIdAttr); LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: Created async
+    //   scope op"<<blockNum<< '\n');
     //   // Create a new block for the async_scope body
-    //   //Block *asyncScopeBlock = builder.createBlock(&asyncScopeOp.getRegion());
-    //   Block *asyncScopeBlock = &asyncScopeOp.getRegion().back();
-    //   size_t blockCount = asyncScopeOp.getRegion().getBlocks().size();
-    //   llvm::outs() << "Number of blocks in region: " << blockCount << "\n";
+    //   //Block *asyncScopeBlock =
+    //   builder.createBlock(&asyncScopeOp.getRegion()); Block *asyncScopeBlock
+    //   = &asyncScopeOp.getRegion().back(); size_t blockCount =
+    //   asyncScopeOp.getRegion().getBlocks().size(); llvm::outs() << "Number of
+    //   blocks in region: " << blockCount << "\n";
     //   builder.setInsertionPointToStart(asyncScopeBlock);
     //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: insertion point"<< '\n');
 
@@ -603,7 +658,8 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     //     //builder.insert(op->clone());
     //     auto clonedOp = op->clone(mapping);
     //     //Update the mapping for the results of the cloned operation
-    //     for (auto [oldResult, newResult] : llvm::zip(op->getResults(), clonedOp->getResults())) {
+    //     for (auto [oldResult, newResult] : llvm::zip(op->getResults(),
+    //     clonedOp->getResults())) {
     //       mapping.map(oldResult, newResult);
     //     }
     //     builder.insert(clonedOp);
@@ -612,31 +668,31 @@ struct AsyncScopePass : public cudaq::opt::impl::AsyncScopePassBase<AsyncScopePa
     //   }
 
     //   builder.create<quake::AsyncContinueOp>(newFunc.getLoc());
-    //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: async continue added"<< '\n');
-    //   builder.setInsertionPointToEnd(entryBlock);
-      
+    //   LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: async continue added"<<
+    //   '\n'); builder.setInsertionPointToEnd(entryBlock);
+
     // }
-    SymbolTable::setSymbolVisibility(newFunc, SymbolTable::getSymbolVisibility(func));
-    //builder.create<quake::AsyncContinueOp>(newFunc.getLoc());
+    SymbolTable::setSymbolVisibility(newFunc,
+                                     SymbolTable::getSymbolVisibility(func));
+    // builder.create<quake::AsyncContinueOp>(newFunc.getLoc());
     for (Operation *op : Measurements) {
       auto clonedOp = op->clone(mapping);
-        //Update the mapping for the results of the cloned operation
-      for (auto [oldResult, newResult] : llvm::zip(op->getResults(), clonedOp->getResults())) {
+      // Update the mapping for the results of the cloned operation
+      for (auto [oldResult, newResult] :
+           llvm::zip(op->getResults(), clonedOp->getResults())) {
         mapping.map(oldResult, newResult);
       }
       builder.insert(clonedOp);
     }
     builder.setInsertionPointToEnd(&newFunc.getBody().back());
     builder.create<func::ReturnOp>(newFunc.getLoc());
-    //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking:\n"<< module << '\n');
+    // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking:\n"<< module << '\n');
     func->replaceAllUsesWith(newFunc);
     func.setPrivate();
     func.erase();
     newFunc->setAttr("mapping_v2p", builder.getArrayAttr(mapping_v2p));
-    //LLVM_DEBUG(llvm::dbgs() << "Ranjani checking:\n"<< newFunc << '\n');
-    
+    // LLVM_DEBUG(llvm::dbgs() << "Ranjani checking:\n"<< newFunc << '\n');
   }
-
 };
 
 } // end anonymous namespace
@@ -645,20 +701,19 @@ std::unique_ptr<mlir::Pass> cudaq::opt::createAsyncScopePass() {
   return std::make_unique<AsyncScopePass>();
 }
 ,
-           
+
     OpBuilder<(ins "mlir::IntegerAttr":$qpu_id), [{
       return build($_builder, $_state, qpu_id);
     }]>
 */
 
-//module.push_back()
-//funcOp.erase()
+// module.push_back()
+// funcOp.erase()
 
-// If value semantic model: Need to change async scope op to have a return type 'wire'--all the modified wirtes. 
-// remove the first async scope op.
+// If value semantic model: Need to change async scope op to have a return type
+// 'wire'--all the modified wirtes. remove the first async scope op.
 
-//try memtoreg
+// try memtoreg
 
-//extract Op
-// Adam Geller --- appending IDs to Qrefs.
-
+// extract Op
+//  Adam Geller --- appending IDs to Qrefs.

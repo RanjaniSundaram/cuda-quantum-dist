@@ -1,0 +1,579 @@
+[1/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/redirect.cpp.o
+[2/608] Building CodeGenDialect.cpp.inc...
+[3/608] Building CodeGenDialect.h.inc...
+[4/608] Building Passes.h.inc...
+[5/608] Building CCDialect.cpp.inc...
+[6/608] Building CCDialect.h.inc...
+[7/608] Building CCInterfaces.cpp.inc...
+[8/608] Building CCInterfaces.h.inc...
+[9/608] Building QuakeDialect.cpp.inc...
+[10/608] Building QuakeDialect.h.inc...
+[11/608] Building QuakeInterfaces.cpp.inc...
+[12/608] Building QuakeInterfaces.h.inc...
+[13/608] Building Canonical.inc...
+[14/608] Building Passes.h.inc...
+[15/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/target_control.cpp.o
+[16/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/api/deprecated.c.o
+[17/608] Running utility command for CUDAQuantumPythonModules.sources.CUDAQuantumPythonSources.quake
+[18/608] Running utility command for CUDAQuantumPythonModules.sources.CUDAQuantumPythonSources.cc
+[19/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.bufferization
+[20/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.bufferization.ops_gen
+[21/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.builtin
+[22/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.builtin.ops_gen
+[23/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.complex.ops_gen
+[24/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.cf.ops_gen
+[25/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/timer.c.o
+[26/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.complex
+[27/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.cf
+[28/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.func
+[29/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.func.ops_gen
+[30/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.gpu
+[31/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.gpu.ops_gen
+[32/608] Building CodeGenOps.cpp.inc...
+[33/608] Building CodeGenOps.h.inc...
+[34/608] Building Peephole.inc...
+[35/608] Building CCOps.cpp.inc...
+[36/608] Building CCOps.h.inc...
+[37/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.linalg.ops_gen
+[38/608] Building QuakeOps.cpp.inc...
+[39/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.transform
+[40/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.transform.ops_gen
+[41/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.loop_transform.ops_gen
+[42/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/api/general.c.o
+[43/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/mt19937ar.c.o
+[44/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/qsort_r.c.o
+[45/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/rescale.c.o
+[46/608] Building QuakeOps.h.inc...
+[47/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.loop_transform
+[48/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.structured_transform
+[49/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.structured_transform.ops_gen
+[50/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.math
+[51/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.math.ops_gen
+[52/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.arith
+[53/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.arith.ops_gen
+[54/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.memref
+[55/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.memref.ops_gen
+[56/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.ml_program
+[57/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.ml_program.ops_gen
+[58/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.quant
+[59/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.pdl.ops_gen
+[60/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.scf.ops_gen
+[61/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.shape
+[62/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.shape.ops_gen
+[63/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/algs/neldermead/nldrmd.c.o
+[64/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/algs/neldermead/sbplx.c.o
+[65/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/api/optimize.c.o
+[66/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/redblack.c.o
+[67/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.pdl
+[68/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.scf
+[69/608] Building CodeGenTypes.cpp.inc...
+[70/608] Building CodeGenTypes.h.inc...
+[71/608] Building CCTypes.cpp.inc...
+[72/608] Building CCTypes.h.inc...
+[73/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.sparse_tensor
+[74/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.sparse_tensor.ops_gen
+[75/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.async_dialect.ops_gen
+[76/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.async_dialect
+[77/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.tensor
+[78/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.tensor.ops_gen
+[79/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.tosa
+[80/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.tosa.ops_gen
+[81/608] Building QuakeTypes.cpp.inc...
+[82/608] Building QuakeTypes.h.inc...
+[83/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.vector
+[84/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.vector.ops_gen
+[85/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/algs/mma/mma.c.o
+[86/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/algs/mma/ccsa_quadratic.c.o
+[87/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/sobolseq.c.o
+[88/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/util/stop.c.o
+[89/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Dialects.linalg
+[90/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.Core
+[91/608] Running utility command for CUDAQuantumPythonModules.sources.MLIRPythonSources.ExecutionEngine
+[92/608] Building dialects/_quake_ops_gen.py...
+[93/608] Building dialects/_cc_ops_gen.py...
+[94/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/algs/cobyla/cobyla.c.o
+[95/608] Building C object runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/CMakeFiles/nlopt.dir/src/api/options.c.o
+[96/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/unix_socket.cpp.o
+[97/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/multipart.cpp.o
+[98/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/cert_info.cpp.o
+[99/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/timeout.cpp.o
+[100/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/curlholder.cpp.o
+[101/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/cprtypes.cpp.o
+[102/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/proxies.cpp.o
+[103/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/error.cpp.o
+[104/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/accept_encoding.cpp.o
+[105/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/auth.cpp.o
+[106/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/async.cpp.o
+[107/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/payload.cpp.o
+[108/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/bearer.cpp.o
+[109/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/parameters.cpp.o
+[110/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/cookies.cpp.o
+[111/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/curl_container.cpp.o
+[112/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/proxyauth.cpp.o
+[113/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/ssl_ctx.cpp.o
+[114/608] Building CXX object runtime/cudaq/distributed/builtin/CMakeFiles/cudaq-comm-plugin.dir/mpi_comm_impl.cpp.o
+[115/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/threadpool.cpp.o
+[116/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/response.cpp.o
+[117/608] Building CXX object tpls/fmt/CMakeFiles/fmt.dir/src/os.cc.o
+[118/608] Linking CXX shared library lib/plugins/libcudaq-comm-plugin.so
+[119/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/util.cpp.o
+[120/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/interceptor.cpp.o
+[121/608] Building CXX object runtime/cudaq/platform/default/CMakeFiles/cudaq-platform-default.dir/__/common/QuantumExecutionQueue.cpp.o
+[122/608] Building CXX object runtime/cudaq/platform/mqpu/CMakeFiles/cudaq-platform-mqpu.dir/__/common/QuantumExecutionQueue.cpp.o
+[123/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/Trace.cpp.o
+[124/608] Building CXX object runtime/cudaq/algorithms/optimizers/nlopt/CMakeFiles/cudaq-nlopt.dir/nlopt.cpp.o
+[125/608] Building CXX object unittests/CMakeFiles/test_mpi.dir/main.cpp.o
+[126/608] Building CXX object tpls/googletest-src/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[127/608] Building CXX object tpls/spdlog/CMakeFiles/spdlog.dir/src/cfg.cpp.o
+[128/608] Building CXX object unittests/CMakeFiles/test_photonics.dir/main.cpp.o
+[129/608] Building CXX object unittests/CMakeFiles/test_domains.dir/main.cpp.o
+[130/608] Building CXX object unittests/CMakeFiles/test_utils.dir/main.cpp.o
+[131/608] Building CXX object unittests/CMakeFiles/test_spin.dir/main.cpp.o
+[132/608] Building CXX object tpls/spdlog/CMakeFiles/spdlog.dir/src/file_sinks.cpp.o
+[133/608] Building CXX object tpls/spdlog/CMakeFiles/spdlog.dir/src/async.cpp.o
+[134/608] Building CXX object unittests/CMakeFiles/test_qudit.dir/main.cpp.o
+[135/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/MeasureCounts.cpp.o
+[136/608] Building CXX object tpls/spdlog/CMakeFiles/spdlog.dir/src/color_sinks.cpp.o
+[137/608] Building CXX object tpls/googletest-src/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[138/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/utils/cudaq_utils.cpp.o
+[139/608] Building CXX object tpls/spdlog/CMakeFiles/spdlog.dir/src/stdout_sinks.cpp.o
+[140/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/Logger.cpp.o
+[141/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/qis/execution_manager.cpp.o
+[142/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/Resources.cpp.o
+[143/608] Building CXX object tpls/fmt/CMakeFiles/fmt.dir/src/format.cc.o
+[144/608] Linking CXX static library tpls/fmt/libfmtd.a
+[145/608] Building CXX object unittests/CMakeFiles/test_spin.dir/spin_op/SpinOpTester.cpp.o
+[146/608] Building CXX object tools/fixup-linkage/CMakeFiles/fixup-linkage.dir/fixup-linkage.cpp.o
+[147/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/distributed/mpi_plugin.cpp.o
+[148/608] Building CXX object runtime/cudaq/domains/chemistry/CMakeFiles/cudaq-chemistry.dir/molecule.cpp.o
+[149/608] Building CXX object lib/Support/CMakeFiles/obj.CUDAQSupport.dir/Plugin.cpp.o
+[150/608] Linking C static library runtime/cudaq/algorithms/optimizers/nlopt/nlopt-src/libnlopt.a
+[151/608] Building CXX object runtime/cudaq/platform/default/rest_server/CMakeFiles/unzip_util.dir/helpers/UnzipUtils.cpp.o
+[152/608] Linking CXX static library lib/libCUDAQSupport.a
+[153/608] Building CXX object tpls/cpr/cpr/CMakeFiles/cpr.dir/session.cpp.o
+[154/608] Building CXX object lib/Optimizer/CAPI/CMakeFiles/obj.CUDAQuantumMLIRCAPI.dir/Dialects.cpp.o
+[155/608] Linking CXX shared library lib/libcudaq-nlopt.so
+[156/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/tensornet-mpi-util.dir/mpi_support.cpp.o
+[157/608] Linking CXX static library tpls/cpr/cpr/libcpr.a
+[158/608] Building CXX object tpls/googletest-src/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[159/608] Linking CXX static library runtime/cudaq/platform/default/rest_server/libunzip_util.a
+[160/608] Building CXX object unittests/CMakeFiles/test_mpi_plugin.dir/mpi/mpi_tester.cpp.o
+[161/608] Building CXX object unittests/CMakeFiles/test_qudit.dir/qudit/SimpleQuditTester.cpp.o
+[162/608] Building CXX object runtime/nvqir/CMakeFiles/nvqir.dir/__/cudaq/qis/state.cpp.o
+[163/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/CodeGenTypes.cpp.o
+[164/608] Building CXX object lib/Optimizer/Dialect/Quake/CMakeFiles/obj.QuakeDialect.dir/QuakeInterfaces.cpp.o
+[165/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/CodeGenDialect.cpp.o
+[166/608] Building CXX object lib/Optimizer/Dialect/Quake/CMakeFiles/obj.QuakeDialect.dir/QuakeTypes.cpp.o
+[167/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/qis/state.cpp.o
+[168/608] Building CXX object unittests/CMakeFiles/test_mpi.dir/mqpu/mpi_mqpu_tester.cpp.o
+[169/608] Building CXX object unittests/CMakeFiles/test_photonics.dir/photonics/PhotonicsTester.cpp.o
+[170/608] Building CXX object runtime/cudaq/platform/mqpu/custatevec/CMakeFiles/gpu-emulated-qpu.dir/GPUEmulatedQPU.cpp.o
+[171/608] Building CXX object runtime/nvqir/CMakeFiles/nvqir.dir/QIRTypes.cpp.o
+[172/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet-mps.dir/tensornet_spin_op.cpp.o
+[173/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet.dir/tensornet_spin_op.cpp.o
+[174/608] Building CXX object runtime/cudaq/platform/default/rest_server/CMakeFiles/rest-remote-platform-client.dir/RemoteRuntimeClient.cpp.o
+[175/608] Building CXX object runtime/cudaq/platform/default/rest/CMakeFiles/cudaq-rest-qpu.dir/__/__/common/QuantumExecutionQueue.cpp.o
+[176/608] Building CXX object runtime/cudaq/platform/default/rest_server/CMakeFiles/rest-remote-platform-server.dir/RemoteRuntimeServer.cpp.o
+[177/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/CodeGenOps.cpp.o
+[178/608] Building CXX object unittests/CMakeFiles/test_utils.dir/utils/UtilsTester.cpp.o
+[179/608] Linking CXX executable bin/fixup-linkage
+[180/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/Pipelines.cpp.o
+[181/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/algorithms/draw.cpp.o
+[182/608] Building CXX object lib/Optimizer/Dialect/CC/CMakeFiles/obj.CCDialect.dir/CCTypes.cpp.o
+[183/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/ServerHelper.cpp.o
+[184/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/Executor.cpp.o
+[185/608] Building CXX object runtime/cudaq/platform/mqpu/helpers/CMakeFiles/mqpu_util.dir/MQPUUtils.cpp.o
+[186/608] Running utility command for CUDAQuantumPythonModules.sources.CUDAQuantumPythonSources.quake.ops_gen
+[187/608] Running utility command for CUDAQuantumPythonModules.sources.CUDAQuantumPythonSources.cc.ops_gen
+[188/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/platform/quantum_platform.cpp.o
+[189/608] Building CXX object runtime/common/CMakeFiles/cudaq-mlir-runtime.dir/Logger.cpp.o
+[190/608] Building CXX object unittests/CMakeFiles/test_domains.dir/domains/ChemistryTester.cpp.o
+[191/608] Building CXX object runtime/cudaq/CMakeFiles/cudaq.dir/cudaq.cpp.o
+[192/608] Building CXX object runtime/cudaq/algorithms/optimizers/ensmallen/CMakeFiles/cudaq-ensmallen.dir/ensmallen.cpp.o
+[193/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet.dir/tn_simulation_state.cpp.o
+[194/608] Building CXX object runtime/cudaq/platform/default/CMakeFiles/cudaq-platform-default.dir/DefaultQuantumPlatform.cpp.o
+[195/608] Linking CXX shared library lib/libcudaq-ensmallen.so
+[196/608] Building CXX object python/runtime/cudaq/domains/plugins/CMakeFiles/cudaq-pyscf.dir/PySCFDriver.cpp.o
+[197/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/RestClient.cpp.o
+[198/608] Building CXX object runtime/cudaq/platform/default/rest_server/CMakeFiles/rest-remote-platform-server.dir/helpers/GPUInfo.cpp.o
+[199/608] Building CXX object tools/cudaq-qpud/CMakeFiles/cudaq-qpud.dir/RestServerMain.cpp.o
+[200/608] Building CXX object runtime/cudaq/platform/mqpu/CMakeFiles/cudaq-platform-mqpu.dir/MultiQPUPlatform.cpp.o
+[201/608] Building CXX object tpls/googletest-src/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[202/608] Building CXX object runtime/nvqir/CMakeFiles/nvqir.dir/NVQIR.cpp.o
+[203/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/TranslateToOpenQASM.cpp.o
+[204/608] Building CXX object runtime/cudaq/qis/managers/default/CMakeFiles/cudaq-em-default.dir/DefaultExecutionManager.cpp.o
+[205/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet.dir/tensornet_state.cpp.o
+[206/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/Future.cpp.o
+[207/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet-mps.dir/tensornet_state.cpp.o
+[208/608] Building CXX object lib/Optimizer/Builder/CMakeFiles/obj.OptimBuilder.dir/Intrinsics.cpp.o
+[209/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/Decomposition.cpp.o
+[210/608] Building CXX object runtime/cudaq/platform/default/rest/helpers/quantinuum/CMakeFiles/cudaq-serverhelper-quantinuum.dir/QuantinuumServerHelper.cpp.o
+[211/608] Building CXX object runtime/cudaq/spin/CMakeFiles/cudaq-spin.dir/spin_op.cpp.o
+[212/608] Building CXX object python/utils/CMakeFiles/cudaq-py-utils.dir/LinkedLibraryHolder.cpp.o
+[213/608] Building CXX object tpls/spdlog/CMakeFiles/spdlog.dir/src/spdlog.cpp.o
+[214/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/MultiControlDecomposition.cpp.o
+[215/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/TranslateToIQMJson.cpp.o
+[216/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet-mps.dir/simulator_mps_register.cpp.o
+[217/608] Linking CXX static library tpls/spdlog/libspdlogd.a
+[218/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LoopAnalysis.cpp.o
+[219/608] Building CXX object runtime/cudaq/platform/default/rest/helpers/ionq/CMakeFiles/cudaq-serverhelper-ionq.dir/IonQServerHelper.cpp.o
+[220/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/Passes.cpp.o
+[221/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/__/runtime/cudaq/platform/default/rest_server/RemoteRuntimeClient.cpp.o
+[222/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/__/runtime/cudaq/platform/common/QuantumExecutionQueue.cpp.o
+[223/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet.dir/simulator_cutensornet.cpp.o
+[224/608] Building CXX object runtime/common/CMakeFiles/cudaq-common.dir/NoiseModel.cpp.o
+[225/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet-mps.dir/simulator_cutensornet.cpp.o
+[226/608] Building CXX object runtime/nvqir/cutensornet/CMakeFiles/nvqir-tensornet.dir/simulator_tensornet_register.cpp.o
+[227/608] Building CXX object runtime/cudaq/builder/CMakeFiles/cudaq-builder.dir/kernels.cpp.o
+[228/608] Building CXX object lib/Optimizer/Builder/CMakeFiles/obj.OptimBuilder.dir/Factory.cpp.o
+[229/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/ConvertCCToLLVM.cpp.o
+[230/608] Linking CXX static library lib/libgtest.a
+[231/608] Linking CXX static library lib/libgmock.a
+[232/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/RemoveMeasurements.cpp.o
+[233/608] Linking CXX static library lib/libgmock_main.a
+[234/608] Linking CXX static library lib/libgtest_main.a
+[235/608] Building CXX object utils/CircuitCheck/CMakeFiles/CircuitCheck.dir/CircuitCheck.cpp.o
+[236/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/DelayMeasurements.cpp.o
+[237/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/VerifyNVQIRCalls.cpp.o
+[238/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/EraseNopCalls.cpp.o
+[239/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirGPUPasses.dso.dir/opt/llvm/src/python/MLIRPythonExtension.GPUDialectPasses/GPUPasses.cpp.o
+[240/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirLinalgPasses.dso.dir/opt/llvm/src/python/MLIRPythonExtension.LinalgPasses/LinalgPasses.cpp.o
+[241/608] Building CXX object runtime/cudaq/platform/default/rest/helpers/oqc/CMakeFiles/cudaq-serverhelper-oqc.dir/OQCServerHelp.cpp.o
+[242/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/AggressiveEarlyInlining.cpp.o
+[243/608] Building CXX object runtime/cudaq/platform/default/rest/helpers/iqm/CMakeFiles/cudaq-serverhelper-iqm.dir/IQMServerHelper.cpp.o
+[244/608] Building CXX object runtime/common/CMakeFiles/cudaq-mlir-runtime.dir/JIT.cpp.o
+[245/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/Mapping.cpp.o
+[246/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/main.cpp.o
+[247/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirDialectsLinalg.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Dialects.Linalg.Pybind/DialectLinalg.cpp.o
+[248/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirDialectsPDL.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Dialects.PDL.Pybind/DialectPDL.cpp.o
+[249/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirDialectsTransform.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Dialects.Transform.Pybind/DialectTransform.cpp.o
+[250/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/AddDeallocs.cpp.o
+[251/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/DistMapping.cpp.o
+[252/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/AsyncScopePass.cpp.o
+[253/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/CombineQuantumAlloc.cpp.o
+[254/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/platform/JITExecutionCache.cpp.o
+[255/608] Building CXX object runtime/cudaq/platform/default/rest/CMakeFiles/cudaq-rest-qpu.dir/helpers/quantinuum/QuantinuumServerHelper.cpp.o
+[256/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LinearCtrlRelations.cpp.o
+[257/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/qis/py_execution_manager.cpp.o
+[258/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/ConvertToCC.cpp.o
+[259/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LoopPeeling.cpp.o
+[260/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/FactorQuantumAlloc.cpp.o
+[261/608] Building CXX object runtime/cudaq/platform/default/rest_server/helpers/server_impl/CMakeFiles/rest_server_impl.dir/RestServer.cpp.o
+[262/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/ApplyControlNegations.cpp.o
+[263/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/ExpandMeasurements.cpp.o
+[264/608] Building CXX object utils/CircuitCheck/CMakeFiles/CircuitCheck.dir/UnitaryBuilder.cpp.o
+[265/608] Building CXX object runtime/cudaq/platform/mqpu/remote/CMakeFiles/cudaq-remote-simulator-qpu.dir/RemoteSimulatorQPU.cpp.o
+[266/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/spin/py_matrix.cpp.o
+[267/608] Building CXX object runtime/cudaq/platform/default/rest/CMakeFiles/cudaq-rest-qpu.dir/helpers/ionq/IonQServerHelper.cpp.o
+[268/608] Building CXX object lib/Optimizer/Dialect/Quake/CMakeFiles/obj.QuakeDialect.dir/QuakeDialect.cpp.o
+[269/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/QuakeAddMetadata.cpp.o
+[270/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/RefToVeqAlloc.cpp.o
+[271/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LowerToCFG.cpp.o
+[272/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/DecompositionPatterns.cpp.o
+[273/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/GenDeviceCodeLoader.cpp.o
+[274/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/QapDistMapping.cpp.o
+[275/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LambdaLifting.cpp.o
+[276/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LoopNormalize.cpp.o
+[277/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirDialectsQuant.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Dialects.Quant.Pybind/DialectQuant.cpp.o
+[278/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirSparseTensorPasses.dso.dir/opt/llvm/src/python/MLIRPythonExtension.SparseTensorDialectPasses/SparseTensorPasses.cpp.o
+[279/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/ApplyOpSpecialization.cpp.o
+[280/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/common/py_SampleResult.cpp.o
+[281/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirAsyncPasses.dso.dir/opt/llvm/src/python/MLIRPythonExtension.AsyncDialectPasses/AsyncPasses.cpp.o
+[282/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/CCToLLVM.cpp.o
+[283/608] Building CXX object runtime/cudaq/platform/orca/CMakeFiles/cudaq-orca-qpu.dir/OrcaQPU.cpp.o
+[284/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/main.cpp.o
+[285/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/PySynthCallableBlockArgs.cpp.o
+[286/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/utils/LinkedLibraryHolder.cpp.o
+[287/608] Building CXX object runtime/cudaq/builder/CMakeFiles/cudaq-builder.dir/QuakeValue.cpp.o
+[288/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/QuakeToCC.cpp.o
+[289/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LoopUnroll.cpp.o
+[290/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/common/py_ObserveResult.cpp.o
+[291/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirRegisterEverything.dso.dir/opt/llvm/src/python/MLIRPythonExtension.RegisterEverything/RegisterEverything.cpp.o
+[292/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/qis/py_qubit_qis.cpp.o
+[293/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/common/py_ExecutionContext.cpp.o
+[294/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/ObserveAnsatz.cpp.o
+[295/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/spin/py_spin_op.cpp.o
+[296/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/QuakeToLLVM.cpp.o
+[297/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/IRModule.cpp.o
+[298/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/PybindUtils.cpp.o
+[299/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/ccnot_tester.cpp.o
+[300/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/draw_tester.cpp.o
+[301/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/common/py_NoiseModel.cpp.o
+[302/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/utils/PyRemoteSimulatorQPU.cpp.o
+[303/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/PruneCtrlRelations.cpp.o
+[304/608] Building CXX object runtime/cudaq/platform/default/rest/CMakeFiles/cudaq-rest-qpu.dir/helpers/oqc/OQCServerHelp.cpp.o
+[305/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/noise_tester.cpp.o
+[306/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/QuakeSynthesizer.cpp.o
+[307/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/qpe_ftqc.cpp.o
+[308/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/target/py_runtime_target.cpp.o
+[309/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/QapDistReMapping.cpp.o
+[310/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/qpe_nisq.cpp.o
+[311/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/adjoint_tester.cpp.o
+[312/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/gradient_tester.cpp.o
+[313/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/grover_test.cpp.o
+[314/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/LowerUnwind.cpp.o
+[315/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/MainModule.cpp.o
+[316/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/target/py_testing_utils.cpp.o
+[317/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/ConvertToQIR.cpp.o
+[318/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/nlopt_tester.cpp.o
+[319/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/__/runtime/cudaq/platform/orca/OrcaQPU.cpp.o
+[320/608] Building CXX object lib/Optimizer/Dialect/CC/CMakeFiles/obj.CCDialect.dir/CCDialect.cpp.o
+[321/608] Building CXX object lib/Optimizer/Dialect/Quake/CMakeFiles/obj.QuakeDialect.dir/QuakeOps.cpp.o
+[322/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirDialectsSparseTensor.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Dialects.SparseTensor.Pybind/DialectSparseTensor.cpp.o
+[323/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/main.cpp.o
+[324/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/measure_reset_tester.cpp.o
+[325/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/bug116_cusv_measure_bug.cpp.o
+[326/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/negative_controls_tester.cpp.o
+[327/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/qir/NVQIRTester.cpp.o
+[328/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/deuteron_variational_tester.cpp.o
+[329/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/ghz_nisq_tester.cpp.o
+[330/608] Building CXX object runtime/cudaq/platform/default/rest/CMakeFiles/cudaq-rest-qpu.dir/helpers/iqm/IQMServerHelper.cpp.o
+[331/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/IRInterfaces.cpp.o
+[332/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/bug77_vqe_with_shots.cpp.o
+[333/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/bug67_vqe_then_sample.cpp.o
+[334/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/gradient_tester.cpp.o
+[335/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/common/MeasureCountsTester.cpp.o
+[336/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/nlopt_tester.cpp.o
+[337/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/bug77_vqe_with_shots.cpp.o
+[338/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/vqe_tester.cpp.o
+[339/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/bug67_vqe_then_sample.cpp.o
+[340/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/common/NoiseModelTester.cpp.o
+[341/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/get_state_tester.cpp.o
+[342/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/draw_tester.cpp.o
+[343/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/qubit_allocation.cpp.o
+[344/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/ccnot_tester.cpp.o
+[345/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/tracer_tester.cpp.o
+[346/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/adjoint_tester.cpp.o
+[347/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/qpe_ftqc.cpp.o
+[348/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/Pass.cpp.o
+[349/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlirExecutionEngine.dso.dir/opt/llvm/src/python/MLIRPythonExtension.ExecutionEngine/ExecutionEngineModule.cpp.o
+[350/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/algorithms/py_optimizer.cpp.o
+[351/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/async_tester.cpp.o
+[352/608] Building CXX object lib/Optimizer/CodeGen/CMakeFiles/obj.OptCodeGen.dir/ConvertToQIRProfile.cpp.o
+[353/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/qpe_nisq.cpp.o
+[354/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/grover_test.cpp.o
+[355/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/async_tester.cpp.o
+[356/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/kernels_tester.cpp.o
+[357/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/observe_result_tester.cpp.o
+[358/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/RegToMem.cpp.o
+[359/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/bug116_cusv_measure_bug.cpp.o
+[360/608] Building CXX object unittests/CMakeFiles/test_mqpu.dir/main.cpp.o
+[361/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/vqe_tester.cpp.o
+[362/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/negative_controls_tester.cpp.o
+[363/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/measure_reset_tester.cpp.o
+[364/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/qis/QubitQISTester.cpp.o
+[365/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/deuteron_variational_tester.cpp.o
+[366/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/ghz_nisq_tester.cpp.o
+[367/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/qubit_allocation.cpp.o
+[368/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/gate_library_tester.cpp.o
+[369/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/main.cpp.o
+[370/608] Building CXX object unittests/CMakeFiles/test_gpu_get_state.dir/main.cpp.o
+[371/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/CUDAQuantumExtension.cpp.o
+[372/608] Building CXX object lib/Optimizer/Dialect/CC/CMakeFiles/obj.CCDialect.dir/CCOps.cpp.o
+[373/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/GenKernelExecution.cpp.o
+[374/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/common/MeasureCountsTester.cpp.o
+[375/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/gate_library_tester.cpp.o
+[376/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/algorithms/py_draw.cpp.o
+[377/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/qir/NVQIRTester.cpp.o
+[378/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/kernels_tester.cpp.o
+[379/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/observe_result_tester.cpp.o
+[380/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/get_state_tester.cpp.o
+[381/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/qis/QubitQISTester.cpp.o
+[382/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/MemToReg.cpp.o
+[383/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/algorithms/py_vqe.cpp.o
+[384/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/noise_tester.cpp.o
+[385/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/IRTypes.cpp.o
+[386/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/noise_tester.cpp.o
+[387/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/adjoint_tester.cpp.o
+[388/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/qpe_ftqc.cpp.o
+[389/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/algorithms/py_sample_async.cpp.o
+[390/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/bug77_vqe_with_shots.cpp.o
+[391/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/tracer_tester.cpp.o
+[392/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/common/NoiseModelTester.cpp.o
+[393/608] Linking CXX static library lib/libCCDialect.a
+[394/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/main.cpp.o
+[395/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/draw_tester.cpp.o
+[396/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/bug116_cusv_measure_bug.cpp.o
+[397/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/gradient_tester.cpp.o
+[398/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/ccnot_tester.cpp.o
+[399/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/grover_test.cpp.o
+[400/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/IRAffine.cpp.o
+[401/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/algorithms/py_state.cpp.o
+[402/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/negative_controls_tester.cpp.o
+[403/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/nlopt_tester.cpp.o
+[404/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/measure_reset_tester.cpp.o
+[405/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/qpe_nisq.cpp.o
+[406/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/gradient_tester.cpp.o
+[407/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/qir/NVQIRTester.cpp.o
+[408/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/common/MeasureCountsTester.cpp.o
+[409/608] Linking CXX static library lib/libQuakeDialect.a
+[410/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/get_state_tester.cpp.o
+[411/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/bug67_vqe_then_sample.cpp.o
+[412/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/qubit_allocation.cpp.o
+[413/608] Linking CXX static library lib/libCUDAQuantumMLIRCAPI.a
+[414/608] Linking CXX static library lib/libOptimBuilder.a
+[415/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/ghz_nisq_tester.cpp.o
+[416/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/nlopt_tester.cpp.o
+[417/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/common/NoiseModelTester.cpp.o
+[418/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/deuteron_variational_tester.cpp.o
+[419/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/async_tester.cpp.o
+[420/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/tracer_tester.cpp.o
+[421/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/observe_result_tester.cpp.o
+[422/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/algorithms/py_observe_async.cpp.o
+[423/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/bug67_vqe_then_sample.cpp.o
+[424/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/vqe_tester.cpp.o
+[425/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/noise_tester.cpp.o
+[426/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/integration/builder_tester.cpp.o
+[427/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/observe_result_tester.cpp.o
+[428/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/qpe_ftqc.cpp.o
+[429/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/vqe_tester.cpp.o
+[430/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/gate_library_tester.cpp.o
+[431/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/grover_test.cpp.o
+[432/608] Building CXX object unittests/CMakeFiles/test_custatevec_observe_from_sampling.dir/integration/gradient_tester.cpp.o
+[433/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/draw_tester.cpp.o
+[434/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/adjoint_tester.cpp.o
+[435/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/ccnot_tester.cpp.o
+[436/608] Building CXX object unittests/CMakeFiles/test_custatevec_observe_from_sampling.dir/integration/nlopt_tester.cpp.o
+[437/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/kernels_tester.cpp.o
+[438/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/gradient_tester.cpp.o
+[439/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/common/MeasureCountsTester.cpp.o
+[440/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/bug116_cusv_measure_bug.cpp.o
+[441/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/negative_controls_tester.cpp.o
+[442/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/qpe_nisq.cpp.o
+[443/608] Linking CXX static library lib/libOptCodeGen.a
+[444/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/nlopt_tester.cpp.o
+[445/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/vqe_tester.cpp.o
+[446/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/measure_reset_tester.cpp.o
+[447/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/bug67_vqe_then_sample.cpp.o
+[448/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/IRAttributes.cpp.o
+[449/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/bug77_vqe_with_shots.cpp.o
+[450/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/qir/NVQIRTester.cpp.o
+[451/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/ghz_nisq_tester.cpp.o
+[452/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/deuteron_variational_tester.cpp.o
+[453/608] Building CXX object unittests/CMakeFiles/test_custatevec_observe_from_sampling.dir/integration/deuteron_variational_tester.cpp.o
+[454/608] Building CXX object unittests/CMakeFiles/test_mqpu.dir/mqpu/mqpu_tester.cpp.o
+[455/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/qpe_ftqc.cpp.o
+[456/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/observe_result_tester.cpp.o
+[457/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/common/NoiseModelTester.cpp.o
+[458/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/qubit_allocation.cpp.o
+[459/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/get_state_tester.cpp.o
+[460/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/draw_tester.cpp.o
+[461/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/grover_test.cpp.o
+[462/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/tracer_tester.cpp.o
+[463/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/integration/builder_tester.cpp.o
+[464/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/noise_tester.cpp.o
+[465/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/ccnot_tester.cpp.o
+[466/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/adjoint_tester.cpp.o
+[467/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/gate_library_tester.cpp.o
+[468/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/async_tester.cpp.o
+[469/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/qis/QubitQISTester.cpp.o
+[470/608] Building CXX object lib/Optimizer/Transforms/CMakeFiles/obj.OptTransforms.dir/BasisConversion.cpp.o
+[471/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/common/MeasureCountsTester.cpp.o
+[472/608] Building CXX object runtime/cudaq/spin/CMakeFiles/cudaq-spin.dir/matrix.cpp.o
+[473/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/measure_reset_tester.cpp.o
+[474/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/ghz_nisq_tester.cpp.o
+[475/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/qpe_nisq.cpp.o
+[476/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/bug116_cusv_measure_bug.cpp.o
+[477/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/kernels_tester.cpp.o
+[478/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/deuteron_variational_tester.cpp.o
+[479/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/bug77_vqe_with_shots.cpp.o
+[480/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/qir/NVQIRTester.cpp.o
+[481/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/negative_controls_tester.cpp.o
+[482/608] Linking CXX executable bin/CircuitCheck
+[483/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/common/NoiseModelTester.cpp.o
+[484/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/qubit_allocation.cpp.o
+[485/608] Linking CXX shared library lib/libcudaq-spin.so
+[486/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/tracer_tester.cpp.o
+[487/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/get_state_tester.cpp.o
+[488/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/async_tester.cpp.o
+[489/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/qis/QubitQISTester.cpp.o
+[490/608] Linking CXX shared library lib/libcudaq-chemistry.so
+[491/608] Linking CXX executable unittests/test_spin
+[492/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/kernels_tester.cpp.o
+[493/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/gate_library_tester.cpp.o
+[494/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/qis/QubitQISTester.cpp.o
+[495/608] Building CXX object unittests/plugin/CMakeFiles/CustomPassPlugin.dir/CustomPassPlugin.cpp.o
+[496/608] Building CXX object unittests/CMakeFiles/test_runtime_custatevec-fp32.dir/integration/builder_tester.cpp.o
+[497/608] Linking CXX shared module lib/CustomPassPlugin.so
+[498/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._mlir.dso.dir/opt/llvm/src/python/MLIRPythonExtension.Core/IRCore.cpp.o
+[499/608] Linking CXX shared library lib/libcudaq-common.so
+/usr/bin/ld: missing --end-group; added as last command line option
+[500/608] Building CXX object unittests/Optimizer/CMakeFiles/OptimizerUnitTests.dir/HermitianTrait.cpp.o
+[501/608] Linking CXX shared library lib/libcudaq-serverhelper-quantinuum.so
+[502/608] Linking CXX shared library lib/libnvqir.so
+[503/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet.dir/integration/builder_tester.cpp.o
+[504/608] Linking CXX shared library lib/libcudaq-serverhelper-iqm.so
+[505/608] Linking CXX shared library lib/libcudaq-serverhelper-ionq.so
+[506/608] Linking CXX shared library lib/libcudaq-serverhelper-oqc.so
+[507/608] Linking CXX static library lib/libOptTransforms.a
+[508/608] Linking CXX shared library lib/libcudaq-em-default.so
+[509/608] Building CXX object tools/cudaq-lsp-server/CMakeFiles/cudaq-lsp-server.dir/cudaq-lsp-server.cpp.o
+[510/608] Linking CXX shared library lib/libcudaq.so
+[511/608] Linking CXX shared library lib/libcudaq-platform-default.so
+[512/608] Building CXX object unittests/backends/ionq/CMakeFiles/test_ionq.dir/IonQTester.cpp.o
+[513/608] Building CXX object unittests/backends/oqc/CMakeFiles/test_oqc.dir/OQCTester.cpp.o
+[514/608] Linking CXX shared library lib/libcudaq-py-utils.so
+[515/608] Linking CXX shared library lib/libcudaq-platform-mqpu.so
+[516/608] Linking CXX executable unittests/Optimizer/OptimizerUnitTests
+[517/608] Linking CXX shared library lib/libnvqir-tensornet.so
+[518/608] Building CXX object unittests/backends/iqm/CMakeFiles/test_iqm.dir/IQMTester.cpp.o
+[519/608] Building CXX object unittests/CMakeFiles/test_custatevec_observe_from_sampling.dir/integration/builder_tester.cpp.o
+[520/608] Building CXX object unittests/CMakeFiles/test_runtime_tensornet-mps.dir/integration/builder_tester.cpp.o
+[521/608] Building CXX object runtime/cudaq/builder/CMakeFiles/cudaq-builder.dir/kernel_builder.cpp.o
+[522/608] Building CXX object unittests/backends/quantinuum/CMakeFiles/test_quantinuum.dir/QuantinuumTester.cpp.o
+[523/608] Building CXX object runtime/cudaq/platform/default/rest/CMakeFiles/cudaq-rest-qpu.dir/RemoteRESTQPU.cpp.o
+[524/608] Linking CXX shared library lib/plugins/libcudaq-pyscf.so
+[525/608] Building CXX object unittests/qudit/simple_qudit/CMakeFiles/cudaq-em-qudit.dir/SimpleQuditExecutionManager.cpp.o
+[526/608] Building CXX object runtime/cudaq/qis/managers/photonics/CMakeFiles/cudaq-em-photonics.dir/PhotonicsExecutionManager.cpp.o
+[527/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/mlir/py_register_dialects.cpp.o
+[528/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/utils/PyRestRemoteClient.cpp.o
+[529/608] Linking CXX shared library unittests/qudit/simple_qudit/libcudaq-em-qudit.so
+[530/608] Linking CXX shared library lib/libcudaq-em-photonics.so
+[531/608] Linking CXX shared library python/cudaq/mlir/_mlir_libs/libCUDAQuantumPythonCAPI.so
+[532/608] Linking CXX executable unittests/test_qudit
+[533/608] Linking CXX executable bin/cudaq-lsp-server
+[534/608] Building CXX object tools/cudaq-opt/CMakeFiles/cudaq-opt.dir/cudaq-opt.cpp.o
+[535/608] Building CXX object runtime/cudaq/platform/default/rest_server/CMakeFiles/rest-remote-platform-client.dir/helpers/RestRemoteClient.cpp.o
+[536/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/cudaq/platform/py_alt_launch_kernel.cpp.o
+[537/608] Building CUDA object runtime/nvqir/custatevec/CMakeFiles/nvqir-custatevec-fp64.dir/CuStateVecCircuitSimulator.cu.o
+[538/608] Building CXX object unittests/backends/qpp_observe/CMakeFiles/nvqir-qpp-observe-test.dir/QPPObserveBackend.cpp.o
+[539/608] Building CXX object runtime/nvqir/qpp/CMakeFiles/nvqir-qpp.dir/QppCircuitSimulator.cpp.o
+[540/608] Building CXX object runtime/nvqir/qpp/CMakeFiles/nvqir-dm.dir/QppDMCircuitSimulator.cpp.o
+[541/608] Building CUDA object runtime/nvqir/custatevec/CMakeFiles/nvqir-custatevec-fp32.dir/CuStateVecCircuitSimulatorF32.cu.o
+[542/608] Linking CUDA shared library lib/libnvqir-custatevec-fp64.so
+[543/608] Linking CUDA shared library lib/libnvqir-custatevec-fp32.so
+[544/608] Linking CXX executable unittests/test_mpi
+[545/608] Building CXX object unittests/backends/qpp_observe/CMakeFiles/test_observe_backend.dir/QppObserveTester.cpp.o
+[546/608] Linking CXX shared library lib/libnvqir-dm.so
+[547/608] Linking CXX shared library unittests/backends/qpp_observe/libnvqir-qpp-observe-test.so
+[548/608] Linking CXX shared library lib/libnvqir-qpp.so
+[549/608] Building CUDA object unittests/CMakeFiles/test_gpu_get_state.dir/gpu/get_state_tester.cu.o
+[550/608] Linking CXX executable unittests/test_mpi_plugin
+[551/608] Linking CXX executable unittests/test_utils
+[552/608] Linking CXX executable unittests/test_domains
+[553/608] Linking CXX executable unittests/test_photonics
+[554/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirAsyncPasses.cpython-310-x86_64-linux-gnu.so
+[555/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirGPUPasses.cpython-310-x86_64-linux-gnu.so
+[556/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirLinalgPasses.cpython-310-x86_64-linux-gnu.so
+[557/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirSparseTensorPasses.cpython-310-x86_64-linux-gnu.so
+[558/608] Building CXX object tools/cudaq-translate/CMakeFiles/cudaq-translate.dir/cudaq-translate.cpp.o
+[559/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirDialectsLinalg.cpython-310-x86_64-linux-gnu.so
+[560/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirRegisterEverything.cpython-310-x86_64-linux-gnu.so
+[561/608] Linking CXX executable unittests/backends/qpp_observe/test_observe_backend
+[562/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirDialectsTransform.cpython-310-x86_64-linux-gnu.so
+[563/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirDialectsPDL.cpython-310-x86_64-linux-gnu.so
+[564/608] Building CXX object unittests/Optimizer/CMakeFiles/test_quake_synth.dir/QuakeSynthTester.cpp.o
+[565/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirExecutionEngine.cpython-310-x86_64-linux-gnu.so
+[566/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirDialectsQuant.cpython-310-x86_64-linux-gnu.so
+[567/608] Linking CXX shared module python/cudaq/mlir/_mlir_libs/_mlirDialectsSparseTensor.cpython-310-x86_64-linux-gnu.so
+[568/608] Building CXX object lib/Frontend/nvqpp/CMakeFiles/obj.cudaq-mlirgen.dir/ConvertType.cpp.o
+[569/608] Building CXX object runtime/common/CMakeFiles/cudaq-mlir-runtime.dir/RuntimeMLIR.cpp.o
+[570/608] Building CXX object lib/Frontend/nvqpp/CMakeFiles/obj.cudaq-mlirgen.dir/ConvertStmt.cpp.o
+[571/608] Building CXX object lib/Frontend/nvqpp/CMakeFiles/obj.cudaq-mlirgen.dir/ConvertDecl.cpp.o
+[572/608] Building CXX object python/CMakeFiles/CUDAQuantumPythonModules.extension._quakeDialects.dso.dir/runtime/utils/PyRemoteRESTQPU.cpp.o
+[573/608] Building CXX object runtime/cudaq/platform/default/rest_server/CMakeFiles/rest-remote-platform-server.dir/helpers/RestRemoteServer.cpp.o
+[574/608] Building CXX object lib/Frontend/nvqpp/CMakeFiles/obj.cudaq-mlirgen.dir/ConvertExpr.cpp.o
+[575/608] Linking CXX executable bin/cudaq-opt
+[576/608] Building CXX object unittests/CMakeFiles/test_runtime_qpp.dir/backends/QPPTester.cpp.o
+[577/608] Building CXX object tools/cudaq-quake/CMakeFiles/cudaq-quake.dir/cudaq-quake.cpp.o
+[578/608] Building CXX object unittests/CMakeFiles/test_runtime_dm.dir/backends/QPPDMTester.cpp.o

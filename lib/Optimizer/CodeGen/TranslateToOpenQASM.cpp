@@ -24,6 +24,7 @@ using namespace cudaq;
 //===----------------------------------------------------------------------===//
 
 /// Translates operation names into OpenQASM gate names
+int Timestamp=0;
 static LogicalResult translateOperatorName(quake::OperatorInterface optor,
                                            StringRef &name) {
   StringRef qkeName = optor->getName().stripDialect();
@@ -249,6 +250,37 @@ static LogicalResult emitOperation(Emitter &emitter, func::FuncOp op) {
   return success();
 }
 
+static LogicalResult emitOperation(Emitter &emitter, quake::AsyncScopeOp op) {
+
+  // In Quake's reference semantics form, kernels only return classical types.
+  // Thus, we check whether the numbers of results is zero or not.
+  if (op.getNumResults() > 0)
+    return op.emitError("cannot return classical results");
+
+  // Separate classical and quantum arguments.
+  SmallVector<int> parameters;
+  //SmallVector<Value> targets;
+
+  Emitter::Scope scope(emitter);
+  parameters.push_back(op.getQpuIdAttr().getInt());
+  emitter.os << "gate " << formatFunctionName("Async_scope_");
+  if (!parameters.empty()) {
+    emitter.os << op.getQpuIdAttr().dyn_cast<mlir::IntegerAttr>().getInt()<<"_"<<Timestamp;
+    llvm::interleaveComma(parameters, emitter.os, [&](auto param) { 
+    });
+  }
+  emitter.os << ' ';
+  emitter.os << " {\n";
+  emitter.os.indent();
+  for (Operation &op : op.getOps()) {
+    if (failed(emitOperation(emitter, op)))
+      return failure();
+  }
+  emitter.os.unindent();
+  emitter.os << "}\n";
+  return success();
+}
+
 static LogicalResult emitOperation(Emitter &emitter, quake::ExtractRefOp op) {
   std::optional<int64_t> index = std::nullopt;
   if (op.hasConstantIndex())
@@ -272,6 +304,9 @@ static LogicalResult emitOperation(Emitter &emitter, func::CallOp callOp) {
   emitter.os << ";\n";
   return success();
 }
+
+
+
 
 static LogicalResult emitOperation(Emitter &emitter,
                                    quake::OperatorInterface optor) {
@@ -329,6 +364,12 @@ static LogicalResult emitOperation(Emitter &emitter, quake::ResetOp op) {
   return success();
 }
 
+static LogicalResult emitOperation(Emitter &emitter, quake::SyncOp op) {
+  emitter.os << "Sync Nodes; \n";
+  Timestamp++;
+  return success();
+}
+
 static LogicalResult emitOperation(Emitter &emitter, Operation &op) {
   using namespace quake;
   return llvm::TypeSwitch<Operation *, LogicalResult>(&op)
@@ -344,10 +385,14 @@ static LogicalResult emitOperation(Emitter &emitter, Operation &op) {
           [&](auto optor) { return emitOperation(emitter, optor); })
       .Case<MzOp>([&](auto op) { return emitOperation(emitter, op); })
       .Case<ResetOp>([&](auto op) { return emitOperation(emitter, op); })
+      .Case<AsyncScopeOp>([&](auto op) { return emitOperation(emitter, op); })
+      .Case<SyncOp>([&](auto op) { return emitOperation(emitter, op); })
       // Ignore
       .Case<DeallocOp>([&](auto op) { return success(); })
       .Case<func::ReturnOp>([&](auto op) { return success(); })
       .Case<arith::ConstantOp>([&](auto op) { return success(); })
+      .Case<AsyncContinueOp>([&](auto op) { return success(); })
+      
       .Default([&](Operation *) -> LogicalResult {
         if (op.getName().getDialectNamespace().equals("llvm"))
           return success();

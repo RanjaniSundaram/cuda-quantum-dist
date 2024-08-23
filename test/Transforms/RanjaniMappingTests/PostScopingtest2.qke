@@ -1,0 +1,38 @@
+module {
+  func.func @new_function() attributes {mapping_v2p = [5, 0, 3, 2, 4, 1]} {
+    %0 = quake.alloca !quake.ref
+    %1 = quake.alloca !quake.ref
+    %2 = quake.alloca !quake.ref
+    %3 = quake.alloca !quake.ref
+    %4 = quake.alloca !quake.ref
+    %5 = quake.alloca !quake.ref
+    quake.async_scope {
+      quake.h %2 : (!quake.ref) -> ()
+      quake.y [%0] %2 : (!quake.ref, !quake.ref) -> ()
+      quake.swap %0, %2 : (!quake.ref, !quake.ref) -> ()
+      quake.x [%2] %1 : (!quake.ref, !quake.ref) -> ()
+    } {qpuId = 1 : i64}
+    quake.async_scope {
+      quake.x [%5] %3 : (!quake.ref, !quake.ref) -> ()
+      quake.h %5 : (!quake.ref) -> ()
+    } {qpuId = 2 : i64}
+    "quake.sync"() {qpuId1 = 1 : i64, qpuId2 = 2 : i64} : () -> ()
+    quake.y [%0] %3 : (!quake.ref, !quake.ref) -> ()
+    quake.async_scope {
+      quake.z [%2] %1 : (!quake.ref, !quake.ref) -> ()
+    } {qpuId = 1 : i64}
+    quake.async_scope {
+      quake.swap %4, %3 : (!quake.ref, !quake.ref) -> ()
+      quake.z [%3] %5 : (!quake.ref, !quake.ref) -> ()
+      quake.x [%4] %3 : (!quake.ref, !quake.ref) -> ()
+    } {qpuId = 2 : i64}
+    %measOut = quake.mz %5 : (!quake.ref) -> !quake.measure
+    %measOut_0 = quake.mz %0 : (!quake.ref) -> !quake.measure
+    %measOut_1 = quake.mz %4 : (!quake.ref) -> !quake.measure
+    %measOut_2 = quake.mz %2 : (!quake.ref) -> !quake.measure
+    %measOut_3 = quake.mz %3 : (!quake.ref) -> !quake.measure
+    %measOut_4 = quake.mz %1 : (!quake.ref) -> !quake.measure
+    return
+  }
+}
+

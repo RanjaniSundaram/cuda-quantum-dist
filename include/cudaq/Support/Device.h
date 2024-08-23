@@ -103,6 +103,7 @@ public:
     device.ComputeComponentsinit();
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
+    device.primMST();
     return device;
   }
 
@@ -145,6 +146,7 @@ public:
     }
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
+    device.primMST();
     return device;
   }
 
@@ -163,6 +165,7 @@ public:
     }
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
+    device.primMST();
     return device;
   }
 
@@ -190,6 +193,7 @@ public:
 
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
+    device.primMST();
     return device;
   }
 
@@ -217,6 +221,7 @@ public:
     }
     device.computeAllPairShortestPaths();
     device.ComputeComponents();
+    device.primMST();
     return device;
   }
 
@@ -253,6 +258,13 @@ public:
       return Path(llvm::reverse(shortestPaths[pairID]));
     return Path(shortestPaths[pairID]);
   }
+
+  Path getMSTPath(Qubit src, Qubit dst) const {
+    unsigned pairID = getPairID(src.index, dst.index);
+    if (src.index > dst.index)
+      return Path(llvm::reverse(MSTPaths[pairID]));
+    return Path(MSTPaths[pairID]);
+  }
   std::vector<std::vector<int>> DistMatrix() {
     // llvm::raw_ostream &os = llvm::errs();
     std::vector<std::vector<int>> distMat(
@@ -272,6 +284,42 @@ public:
     // os << "Ranjani checking: filled matrix " <<"\n";
     return distMat;
   }
+  void RecomputeChildren() {
+  int numQubits= topology.getNumNodes();
+  NumChildren.clear();
+  NumChildren.resize(numQubits,0);
+  for (int i=0; i<numQubits; i++){
+    if (MST[i]==-1){
+      continue;
+    }
+    NumChildren[MST[i]]++;
+  }
+}
+
+bool IsEmptyMST(){
+  bool empty=true;
+  int numQubits= topology.getNumNodes();
+  for (int i=0; i<numQubits; i++){
+    if (NumChildren[i]>0){
+      empty=false;
+    }
+  }
+  return empty;
+}
+
+int PickRandomLeaf(){
+  int numQubits= topology.getNumNodes();
+  int leaf;
+  for (int i=0; i<numQubits; i++){
+    if (NumChildren[i]==0){
+      leaf=i;
+      NumChildren[MST[i]]--;
+      NumChildren[i]--;
+      break;
+    }
+  }
+  return leaf;
+}
 
   void dump(llvm::raw_ostream &os = llvm::errs()) const {
     os << "Graph:\n";
@@ -410,9 +458,123 @@ private:
       }
     }
   }
+  void computeAllPairMSTPaths(int numNodes,  GraphCSR &MSTGraph) {
+    MSTPaths.resize(numNodes * (numNodes + 1) / 2);
+    mlir::SmallVector<Qubit> path(numNodes);
+    for (int n = 0; n < numNodes; ++n) {
+      auto [parents, distance] = dijkstra(MSTGraph, Qubit(n), remoteRatio);
+      // Reconstruct the paths
+      for (auto m = n + 1; m < numNodes; ++m) {
+        path.clear();
+        path.push_back(Qubit(m));
+        auto p = parents[m];
+        while (p != Qubit(n)) {
+          path.push_back(p);
+          p = parents[p.index];
+        }
+        path.push_back(Qubit(n));
+        pathsData.append(path.rbegin(), path.rend());
+        MSTPaths[getPairID(n, m)] =
+            PathRef(pathsData.end() - path.size(), pathsData.end());
+      }
+    }
+  }
+
+
+
+  int minKey(int key[], bool mstSet[], int numQubits)
+  {
+      // Initialize min value
+      int min = INT_MAX, min_index;
+
+      for (int v = 0; v < numQubits; v++)
+          if (mstSet[v] == false && key[v] < min)
+              min = key[v], min_index = v;
+
+      return min_index;
+  }
+  // Function to construct MST for a graph
+  void primMST()
+  {
+      // Array to store constructed MST
+      int numQubits=topology.getNumNodes();
+
+      // Key values used to pick minimum weight edge in cut
+      int key[numQubits];
+      MST.resize(numQubits);
+
+      // To represent set of vertices included in MST
+      bool mstSet[numQubits];
+
+      // Initialize all keys as INFINITE
+      for (int i = 0; i < numQubits; i++)
+          key[i] = INT_MAX, mstSet[i] = false;
+
+      // Always include first 1st vertex in MST.
+      // Make key 0 so that this vertex is picked as first
+      // vertex.
+      key[0] = 0;
+    
+      // First node is always root of MST
+      MST[0] = -1;
+      int ncount;
+      // The MST will have V vertices
+      for (int count = 0; count < numQubits - 1; count++) {
+          
+          // Pick the minimum key vertex from the
+          // set of vertices not yet included in MST
+          int u = minKey(key, mstSet, numQubits);
+
+          // Add the picked vertex to the MST Set
+          mstSet[u] = true;
+
+          // Update key value and parent index of
+          // the adjacent vertices of the picked vertex.
+          // Consider only those vertices which are not
+          // yet included in MST
+          mlir::ArrayRef<int> neighweights = topology.getNeighboursWeights(Qubit(u));
+          ncount=0;
+          for (auto neighbour : topology.getNeighbours(Qubit(u))){
+            if (mstSet[neighbour.index]==false &&  neighweights[ncount]<key[neighbour.index]){
+              MST[neighbour.index]=u, key[neighbour.index]=neighweights[ncount];
+            }
+            ncount++;
+          }
+      }
+      NumChildren.resize(numQubits);
+      for (int i=0; i<numQubits; i++){
+        if (MST[i]==-1){
+          continue;
+        }
+        NumChildren.push_back(0);
+      }
+
+      GraphCSR MSTGraph;
+      for (int i=0; i<numQubits; i++){
+        MSTGraph.createNode();
+        if (MST[i]==-1){
+          continue;
+        }
+        NumChildren[MST[i]]++;
+      }
+      for (int i=0; i<numQubits; i++){
+        if (MST[i]==-1){
+          continue;
+        }
+        MSTGraph.addEdge(Qubit(i), Qubit(MST[i]));
+      }
+      computeAllPairMSTPaths(numQubits, MSTGraph);
+  }
+
+
+
 
   /// Device nodes (qubits) and edges (connections)
   GraphCSR topology;
+  mlir::SmallVector<int> MST;
+
+  mlir::SmallVector<int> NumChildren;
+  mlir::SmallVector<PathRef> MSTPaths;
 
   /// List of shortest path from/to every source/destination
   mlir::SmallVector<PathRef> shortestPaths;

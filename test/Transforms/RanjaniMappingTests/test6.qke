@@ -1,0 +1,33 @@
+module {
+  func.func @new_function() {
+    %0 = quake.null_wire
+    %1 = quake.null_wire
+    %2 = quake.null_wire
+    %3 = quake.null_wire
+    %4 = quake.null_wire
+    %5 = quake.null_wire
+    %6:2 = quake.x [%0] %2 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %7 = quake.h %6#0 : (!quake.wire) -> !quake.wire
+    %8:2 = quake.y [%1] %6#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %9:2 = quake.x [%3] %5 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %10:2 = quake.z [%9#0] %9#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %11:2 = quake.y [%8#0] %7 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %12:2 = quake.z [%10#0] %10#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %13:2 = quake.y [%11#0] %11#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %14 = quake.h %13#0 : (!quake.wire) -> !quake.wire
+    %15:2 = quake.y [%12#0] %4 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %16:2 = quake.y [%8#1] %14 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %17:2 = quake.y [%15#0] %16#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %18:2 = quake.x [%13#1] %16#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %19:2 = quake.y [%17#1] %12#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %20:2 = quake.x [%18#1] %15#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %21:2 = quake.y [%19#0] %17#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %22:2 = quake.x [%21#1] %19#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %23:2 = quake.x [%18#0] %20#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %24:2 = quake.z [%22#0] %22#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %25:2 = quake.z [%20#1] %23#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %26:2 = quake.x [%23#1] %25#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    return
+  }
+}
+

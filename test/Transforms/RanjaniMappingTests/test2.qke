@@ -9,11 +9,11 @@ module {
     %6:2 = quake.x [%0] %2 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
     %7 = quake.h %6#0 : (!quake.wire) -> !quake.wire
     %8 = quake.h %1 : (!quake.wire) -> !quake.wire
-    %9:2 = quake.x [%3] %8 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %10:2 = quake.x [%4] %7 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %9:2 = quake.y [%3] %8 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %10:2 = quake.z [%4] %7 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
     %11:2 = quake.x [%9#0] %5 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %12:2 = quake.x [%9#1] %6#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
-    %13:2 = quake.x [%11#0] %11#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %12:2 = quake.y [%9#1] %6#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
+    %13:2 = quake.z [%11#0] %11#1 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
     %14:2 = quake.x [%12#1] %10#0 : (!quake.wire, !quake.wire) -> (!quake.wire, !quake.wire)
     return
   }

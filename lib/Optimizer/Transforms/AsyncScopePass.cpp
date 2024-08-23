@@ -385,10 +385,7 @@ struct AsyncScopePass
             // "<<"\n");
 
             if (quake::getQuantumOperands(op).size() == 1) {
-              auto q1 = static_cast<unsigned int>(
-                  mapping_v2p[wireToVirtualQ[prev].index]
-                      .dyn_cast<mlir::IntegerAttr>()
-                      .getInt());
+              auto q1 = static_cast<unsigned int>(wireToVirtualQ[prev].index);
               LLVM_DEBUG(llvm::dbgs()
                          << "Ranjani checking: In loop " << q1 << "\n");
               LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: location "
@@ -413,13 +410,8 @@ struct AsyncScopePass
             continue;
           }
           auto q1 =
-              static_cast<unsigned int>(mapping_v2p[wireToVirtualQ[prev].index]
-                                            .dyn_cast<mlir::IntegerAttr>()
-                                            .getInt());
-          auto q2 = static_cast<unsigned int>(
-              mapping_v2p[wireToVirtualQ[wireOp].index]
-                  .dyn_cast<mlir::IntegerAttr>()
-                  .getInt());
+              static_cast<unsigned int>(wireToVirtualQ[prev].index);
+          auto q2 = static_cast<unsigned int>(wireToVirtualQ[wireOp].index);
           LLVM_DEBUG(llvm::dbgs() << "Ranjani checking: In loop virtual "
                                   << wireToVirtualQ[prev].index << " "
                                   << wireToVirtualQ[wireOp].index << "\n");

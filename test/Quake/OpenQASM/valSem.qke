@@ -1,4 +1,4 @@
-func.func @new_function() {
+func.func @new_function() attributes {"cudaq-entrypoint"}  {
     %0 = quake.alloca !quake.ref
     %1 = quake.alloca !quake.ref
     %2 = quake.alloca !quake.ref
@@ -8,11 +8,11 @@ func.func @new_function() {
     quake.x [%0] %2 : (!quake.ref, !quake.ref) -> ()
     quake.h %0 : (!quake.ref) -> ()
     quake.h %1 : (!quake.ref) -> ()
-    quake.y [%3] %1 : (!quake.ref, !quake.ref) -> ()
-    quake.z [%4] %0 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %1 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%4] %0 : (!quake.ref, !quake.ref) -> ()
     quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
-    quake.y [%1] %2 : (!quake.ref, !quake.ref) -> ()
-    quake.z [%3] %5 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%1] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%3] %5 : (!quake.ref, !quake.ref) -> ()
     quake.x [%2] %4 : (!quake.ref, !quake.ref) -> ()
     return
   }

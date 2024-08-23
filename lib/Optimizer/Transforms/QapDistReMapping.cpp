@@ -111,11 +111,11 @@ class SabreRouter {
 
 public:
   using Qubit = GraphCSR::Node;
-  SabreRouter(const Device &device, WireMap &wireMap, Placement &placement,
+  SabreRouter(Device &device, WireMap &wireMap, Placement &placement, std::vector<int> &InverseMapping,
               cudaq::CircuitSlicer &reMapper, unsigned extendedLayerSize,
               float extendedLayerWeight, float decayDelta,
               unsigned roundsDecayReset)
-      : device(device), wireToVirtualQ(wireMap), placement(placement),
+      : device(device), wireToVirtualQ(wireMap), placement(placement), InverseMapping(InverseMapping),
         reMapper(reMapper), extendedLayerSize(extendedLayerSize),
         extendedLayerWeight(extendedLayerWeight), decayDelta(decayDelta),
         roundsDecayReset(roundsDecayReset),
@@ -147,9 +147,10 @@ private:
   Swap chooseSwap();
 
 private:
-  const Device &device;
+  Device &device;
   WireMap &wireToVirtualQ;
   Placement &placement;
+  std::vector<int> InverseMapping;
   cudaq::CircuitSlicer &reMapper;
   // Parameters
   const unsigned extendedLayerSize;
@@ -256,7 +257,7 @@ LogicalResult SabreRouter::mapOperation(VirtualOp &virtOp) {
 }
 
 void SabreRouter::reMap(std::vector<int> NewMap, OpBuilder builder) {
-  // llvm::raw_ostream &os = llvm::errs();
+  llvm::raw_ostream &os = llvm::errs();
   auto wireType = builder.getType<quake::WireType>();
   auto addSwap = [&](Placement::DeviceQ q0, Placement::DeviceQ q1) {
     placement.swap(q0, q1);
@@ -267,29 +268,52 @@ void SabreRouter::reMap(std::vector<int> NewMap, OpBuilder builder) {
         DenseBoolArrayAttr{});
     phyToWire[q0.index] = swap.getResult(0);
     phyToWire[q1.index] = swap.getResult(1);
-    // os<<"[updating current map ("<<placement.getVr(q0).index<<":
-    // "<<q1.index<<") "<<placement.getVr(q1).index<<": "<<q0.index<<") "<<"] ";
+    // wireToVirtualQ[swap.getResult(0)]=placement.getVr(q0);
+    // wireToVirtualQ[swap.getResult(1)]=placement.getVr(q1);
+    //os<<"[updating current map ("<<placement.getVr(q0).index<<":"<<q1.index<<") "<<placement.getVr(q1).index<<": "<<q0.index<<") "<<"] ";
     currentMap[placement.getVr(q0).index] = q0.index + 1;
     currentMap[placement.getVr(q1).index] = q1.index + 1;
   };
   int numQubits = device.getNumQubits();
+  device.RecomputeChildren();
+  std::vector<int> InverseNewMap(numQubits,0);
+  os<<"Remapping \n";
   for (int i = 0; i < numQubits; i++) {
-    auto path =
-        device.getShortestPath(Qubit(currentMap[i] - 1), Qubit(NewMap[i] - 1));
-    // os<<"need to get from  "<<currentMap[i]-1<<" to "<<NewMap[i]-1<<" for
-    // "<<i<<"\n"; auto
-    // path_rev=device.getShortestPath(Qubit(NewMap[i]),Qubit(currentMap[i]));
-    Qubit init = Qubit(currentMap[i] - 1);
+    InverseNewMap[NewMap[i]-1]=i;
+  }
+
+  while (!device.IsEmptyMST()){
+    int leaf = device.PickRandomLeaf();
+    os<<"need to get from  "<<currentMap[InverseNewMap[leaf]]-1<<" to "<<leaf<<" for "<<InverseNewMap[leaf]<<"\n";
+    auto path =device.getMSTPath(Qubit(currentMap[InverseNewMap[leaf]] - 1), Qubit(leaf));
+    Qubit init = Qubit(currentMap[InverseNewMap[leaf]] - 1);
     for (auto node : path) {
       if (init == node)
         continue;
-      // os<<"swapping "<<init.index<<" "<<node.index<<" ";
+      os<<"swapping "<<init.index<<" "<<node.index<<" ";
       addSwap(init, node);
       totalCost += device.getWeightedDistance(init, node);
       init = node;
     }
-    // os<<"\n";
+    os<<"\n";
+
   }
+  // for (int i = 0; i < numQubits; i++) {
+  //   auto path =
+  //       device.getShortestPath(Qubit(currentMap[i] - 1), Qubit(NewMap[i] - 1));
+  //   //os<<"need to get from  "<<currentMap[i]-1<<" to "<<NewMap[i]-1<<" for "<<i<<"\n";
+  //   // path_rev=device.getShortestPath(Qubit(NewMap[i]),Qubit(currentMap[i]));
+  //   Qubit init = Qubit(currentMap[i] - 1);
+  //   for (auto node : path) {
+  //     if (init == node)
+  //       continue;
+  //     //os<<"swapping "<<init.index<<" "<<node.index<<" ";
+  //     addSwap(init, node);
+  //     totalCost += device.getWeightedDistance(init, node);
+  //     init = node;
+  //   }
+  //   //os<<"Remapped \n";
+  // }
 }
 
 void SabreRouter::listGates(mlir::SmallVector<std::tuple<int, int>> &gates,
@@ -343,7 +367,6 @@ LogicalResult SabreRouter::mapFrontLayer(OpBuilder builder) {
   });
   for (auto virtOp : frontLayer) {
     if (virtOp.qubits.size() == 2) {
-      IndexCount++;
       if (std::find(reMapper.remappingIndices.begin(),
                     reMapper.remappingIndices.end(),
                     IndexCount) != reMapper.remappingIndices.end()) {
@@ -356,8 +379,10 @@ LogicalResult SabreRouter::mapFrontLayer(OpBuilder builder) {
         newFrontLayer.push_back(virtOp);
         for (auto vr : virtOp.qubits)
           involvedPhy.insert(placement.getPhy(vr));
+        IndexCount++;
         continue;
       }
+      IndexCount++;
     }
     LLVM_DEBUG({
       logger.startLine() << "* ";
@@ -491,7 +516,7 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
     logger.unindent();
     logger.startLine() << logLineComment;
   });
-  currentMap = reMapper.reMaps[0];
+  
   // The source ops can always be mapped.
   for (quake::NullWireOp nullWire : sources) {
     visitUsers(nullWire->getUsers(), frontLayer);
@@ -511,7 +536,17 @@ void SabreRouter::route(Block &block, ArrayRef<quake::NullWireOp> sources) {
         DenseBoolArrayAttr{});
     phyToWire[q0.index] = swap.getResult(0);
     phyToWire[q1.index] = swap.getResult(1);
+    // wireToVirtualQ[swap.getResult(0)]=placement.getVr(q0);
+    // wireToVirtualQ[swap.getResult(1)]=placement.getVr(q1);
+    currentMap[placement.getVr(q0).index] = q0.index + 1;
+    currentMap[placement.getVr(q1).index] = q1.index + 1;
+
   };
+  int numQubits=device.getNumQubits();
+  for (int i=0;i<numQubits;i++){
+    currentMap.push_back(i+1);
+  }
+  reMap(InverseMapping, builder);
 
   std::size_t numSwapSearches = 0;
   bool done = false;
@@ -870,9 +905,11 @@ struct Mapper : public cudaq::opt::impl::QapDistReMappingPassBase<Mapper> {
     for (unsigned int i = 0; i < placement.getNumVirtualQ(); i++) {
       placement.map(Placement::VirtualQ(i), Placement::DeviceQ(i));
     }
+    std::vector<int> Identity(d.getNumQubits());
+    std::iota (std::begin(Identity), std::end(Identity), 0);
     cudaq::CircuitSlicer tempRemapper(numQubits, gates);
     SabreRouter *temprouter = new SabreRouter(
-        d, wireToVirtualQ, placement, tempRemapper, extendedLayerSize,
+        d, wireToVirtualQ, placement, Identity, tempRemapper, extendedLayerSize,
         extendedLayerWeight, decayDelta, roundsDecayReset);
     temprouter->listGates(gates, sources);
     delete temprouter;
@@ -930,17 +967,24 @@ struct Mapper : public cudaq::opt::impl::QapDistReMappingPassBase<Mapper> {
           Placement::VirtualQ(sources.size());
       sources.push_back(nullWireOp);
     }
+    
     auto solution = Remapper.reMaps[0];
+    std::vector<int> Inversesolution(numQubits,0);
+    
+    for ( unsigned int i = 0; i < d.getNumQubits(); i++) {
+      llvm::dbgs() << "soln entry " << i << " " << solution[i]-1 << "\n";
+      Inversesolution[solution[i]-1]=i;
+    }
     for (unsigned int i = 0; i < placement.getNumVirtualQ(); i++) {
       placement.map(Placement::VirtualQ(i),
-                    Placement::DeviceQ(solution[i] - 1));
+                    Placement::DeviceQ(i));
     }
     // Place
     // Placement placement(sources.size(), d.getNumQubits());
     // identityPlacement(placement);
 
     // Route
-    SabreRouter router(d, wireToVirtualQ, placement, Remapper,
+    SabreRouter router(d, wireToVirtualQ, placement,solution, Remapper,
                        extendedLayerSize, extendedLayerWeight, decayDelta,
                        roundsDecayReset);
     router.route(*blocks.begin(), sources);
